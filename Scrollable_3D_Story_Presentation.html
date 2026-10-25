@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic 3D Scrollytelling Presentation | Sales Analytics & 3D Clustering</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js (Local with CDN fallback) -->
+    <script src="three.min.js"></script>
+    <script>
+        if (typeof THREE === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-void: #060913;
+            --bg-glass: rgba(15, 23, 42, 0.78);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-cyan: rgba(0, 242, 254, 0.4);
+            --cyan: #00f2fe;
+            --blue: #4facfe;
+            --emerald: #00f5a0;
+            --pink: #ff007f;
+            --purple: #a855f7;
+            --amber: #f5a623;
+            --red: #ff3366;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            height: 100vh;
+            scrollbar-width: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Fixed 3D WebGL Canvas Layer */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Cinematic HUD Header */
+        .hud-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(6, 9, 19, 0.95) 0%, rgba(6, 9, 19, 0) 100%);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .hud-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+        }
+
+        .brand-pill {
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hud-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .hud-btn:hover, .hud-btn.active {
+            background: rgba(0, 242, 254, 0.2);
+            border-color: var(--cyan);
+            color: var(--cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.35);
+        }
+
+        /* Persistent Right Chapter Navigator */
+        .chapter-nav {
+            position: fixed;
+            right: 2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .chapter-dot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            flex-direction: row-reverse;
+        }
+
+        .dot-circle {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            transition: all 0.3s;
+        }
+
+        .dot-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .chapter-dot:hover .dot-label, .chapter-dot.active .dot-label {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--cyan);
+        }
+
+        .chapter-dot.active .dot-circle {
+            width: 24px;
+            border-radius: 6px;
+            background: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        /* Bottom Floating Scroll Indicator */
+        .scroll-pill-hud {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 18px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            backdrop-filter: blur(20px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .scroll-mouse-anim {
+            width: 14px;
+            height: 22px;
+            border: 2px solid var(--cyan);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .scroll-mouse-anim::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 5px;
+            background: var(--cyan);
+            border-radius: 2px;
+            animation: mouseScroll 1.5s infinite;
+        }
+
+        @keyframes mouseScroll {
+            0% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, 8px); }
+        }
+
+        /* Scroll Virtual Track (Height creates the scroll distance) */
+        .scroll-container {
+            position: relative;
+            height: 700vh;
+            width: 100%;
+        }
+
+        /* Story Chapters Floating Layouts */
+        .story-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6rem;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(30px) scale(0.96);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+        }
+
+        .story-section.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Glass Cards */
+        .story-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            padding: 2.2rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 620px;
+            position: relative;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+
+        .card-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-body-text {
+            font-size: 14.5px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .kpi-tile {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .kpi-tile-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .kpi-tile-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Three.js WebGL Stage -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Top Cinematic HUD Header -->
+    <header class="hud-header">
+        <div class="hud-brand">
+            <span class="brand-pill">AKTU 2026-27</span>
+            <span style="font-size: 14.5px; color: #fff;">CINEMATIC 3D DATA STORY</span>
+        </div>
+        <div class="hud-actions">
+            <button class="hud-btn" id="btn-autoscroll" onclick="toggleAutoScroll()">
+                <span>▶</span> Auto-Play Movie
+            </button>
+            <button class="hud-btn" onclick="toggleFullscreen()">
+                <span>⛶</span> Fullscreen
+            </button>
+        </div>
+    </header>
+
+    <!-- Right Chapter Dot Navigator -->
+    <nav class="chapter-nav" id="chapter-nav">
+        <div class="chapter-dot active" onclick="scrollToChapter(0)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">01 PROLOGUE</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(1)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">02 TOPLINE ILLUSION</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(2)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">03 THE CRIME SCENE</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(3)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">04 DISCOUNT CLIFF</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(4)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">05 3D CUSTOMER GALAXY</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(5)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">06 VIP & YOUTH ZOOM</div>
+        </div>
+        <div class="chapter-dot" onclick="scrollToChapter(6)">
+            <div class="dot-circle"></div>
+            <div class="dot-label">07 TURNAROUND BLUEPRINT</div>
+        </div>
+    </nav>
+
+    <!-- Bottom Scroll Indicator -->
+    <div class="scroll-pill-hud">
+        <div class="scroll-mouse-anim"></div>
+        <span id="scroll-pct-display">SCROLL TO FLY THROUGH 3D STORY • 0%</span>
+    </div>
+
+    <!-- Long Virtual Scroll Track -->
+    <div class="scroll-container">
+
+        <!-- ACT 1: PROLOGUE (Center Stage) -->
+        <section class="story-section active" id="sec-0" style="justify-content: center; text-align: center;">
+            <div class="story-card" style="max-width: 780px;">
+                <div class="card-tag" style="justify-content: center;">
+                    <span>✦</span> A CINEMATIC 3D SCROLL EXPERIENCE
+                </div>
+                <h1 class="card-title" style="font-size: 2.8rem;">
+                    The $2.3M Retail Paradox & 3D Clustering
+                </h1>
+                <p class="card-body-text" style="font-size: 16px;">
+                    A retail giant generating massive revenue across 9,994 transactions, yet operating margins were bleeding beneath the surface. Scroll down to enter the 3D data space and uncover the truth.
+                </p>
+                <div style="font-family: 'JetBrains Mono'; font-size: 12px; color: var(--cyan);">
+                    SCROLL DOWN (MOUSE WHEEL OR TOUCH) TO MOVE 3D CAMERA ➔
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 2: TOPLINE ILLUSION (Camera Dolly Left, Cards on Right) -->
+        <section class="story-section" id="sec-1" style="justify-content: flex-end;">
+            <div class="story-card">
+                <div class="card-tag">ACT I: THE FINANCIAL AUDIT</div>
+                <h2 class="card-title">Topline Scale vs Margin Reality</h2>
+                <p class="card-body-text">
+                    The business celebrated record 20.4% YoY sales growth. But financial auditing revealed that gross volume was artificially subsidized by aggressive promotions.
+                </p>
+                <div class="kpi-row">
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">TOTAL SALES</div>
+                        <div class="kpi-tile-val" style="color: var(--cyan);">$2.30M</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">NET PROFIT</div>
+                        <div class="kpi-tile-val" style="color: var(--emerald);">$286.4K</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">PROFIT MARGIN</div>
+                        <div class="kpi-tile-val" style="color: var(--amber);">12.47%</div>
+                    </div>
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">TOTAL ORDERS</div>
+                        <div class="kpi-tile-val" style="color: var(--purple);">9,994</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 3: THE CRIME SCENE (Category Pillars) -->
+        <section class="story-section" id="sec-2" style="justify-content: flex-start;">
+            <div class="story-card" style="border-left: 4px solid var(--red);">
+                <div class="card-tag" style="color: var(--red);">ACT II: CATEGORY DISSECTION</div>
+                <h2 class="card-title">The Furniture Profit Fracture</h2>
+                <p class="card-body-text">
+                    Observe the 3D extruded pillars floating to your right. Technology and Office Supplies generate robust 17% margins. But Furniture is a disastrous margin trap.
+                </p>
+                <div style="background: rgba(255, 51, 102, 0.1); border: 1px solid rgba(255, 51, 102, 0.3); border-radius: 12px; padding: 14px; margin-bottom: 12px;">
+                    <div style="font-weight: 700; color: var(--red); font-size: 14px; margin-bottom: 4px;">CHRONIC SKU DEFICITS:</div>
+                    <div style="font-size: 13px; color: #fff;">• Tables: Net Loss of -$17,725</div>
+                    <div style="font-size: 13px; color: #fff;">• Bookcases: Net Loss of -$3,473</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Furniture took 32% of total sales volume but yielded only 2.49% profit.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 4: THE 20% DISCOUNT CLIFF -->
+        <section class="story-section" id="sec-3" style="justify-content: flex-end;">
+            <div class="story-card" style="border-left: 4px solid var(--amber);">
+                <div class="card-tag" style="color: var(--amber);">ACT II: ROOT CAUSE ANALYSIS</div>
+                <h2 class="card-title">The 20% Discount Cliff</h2>
+                <p class="card-body-text">
+                    Why did Furniture collapse? Mathematical modeling reveals an exact inflection boundary at 20% discount.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; background: rgba(0,245,160,0.06); padding: 8px 12px; border-radius: 8px;">
+                        <span>0% - 10% Discount:</span>
+                        <strong style="color: var(--emerald);">+28.5% Margin (Safe Zone)</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; background: rgba(0,242,254,0.06); padding: 8px 12px; border-radius: 8px;">
+                        <span>10% - 20% Discount:</span>
+                        <strong style="color: var(--cyan);">+14.2% Margin (Healthy)</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; background: rgba(255,51,102,0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--red);">
+                        <span>> 20% Discount:</span>
+                        <strong style="color: var(--red);">-5.4% to -85% LOSS!</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 5: 3D CUSTOMER GALAXY -->
+        <section class="story-section" id="sec-4" style="justify-content: flex-start;">
+            <div class="story-card" style="border-left: 4px solid var(--purple);">
+                <div class="card-tag" style="color: var(--purple);">ACT IV: UNSUPERVISED MACHINE LEARNING</div>
+                <h2 class="card-title">The 3D Customer Galaxy</h2>
+                <p class="card-body-text">
+                    You are now flying through 200 real mall customer profiles in 3D coordinate space.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12.5px;">
+                    <div><strong style="color: var(--cyan);">• StandardScaler:</strong> Z-score scaling prevents $137k income from distorting age.</div>
+                    <div><strong style="color: var(--purple);">• Elbow WCSS & Silhouette (0.45):</strong> Pinpoints the optimal 6-cluster division.</div>
+                    <div><strong style="color: var(--emerald);">• K-Means++ Seeding:</strong> Deterministic centroid convergence in &lt; 15 iterations.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 6: VIP & YOUTH ZOOM -->
+        <section class="story-section" id="sec-5" style="justify-content: flex-end;">
+            <div class="story-card" style="border-left: 4px solid var(--cyan);">
+                <div class="card-tag">ACT V: BEHAVIORAL PERSONAS</div>
+                <h2 class="card-title">The Crown Jewel VIPs vs Youth</h2>
+                <p class="card-body-text">
+                    The camera has zoomed right into the top high-spending clusters.
+                </p>
+                <div style="background: rgba(0,242,254,0.08); border: 1px solid var(--border-cyan); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+                    <div style="color: var(--cyan); font-weight: 700; font-size: 13.5px;">👑 Cluster 1: VIP Luxury (N=39)</div>
+                    <div style="font-size: 12px; color: #fff; margin-top: 3px;">Age: 32.7 | Income: $86.5k | Spending: 82.1/100</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Strategy: Zero discounts. Provide white-glove concierge & exclusive drops.</div>
+                </div>
+                <div style="background: rgba(255,0,127,0.08); border: 1px solid rgba(255,0,127,0.3); border-radius: 12px; padding: 12px;">
+                    <div style="color: var(--pink); font-weight: 700; font-size: 13.5px;">🔥 Cluster 2: Trend Youth (N=25)</div>
+                    <div style="font-size: 12px; color: #fff; margin-top: 3px;">Age: 25.6 | Income: $26.5k | Spending: 76.2/100</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Strategy: Mobile-first drops, social media campaigns, and BNPL financing.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 7: BLUEPRINT & DEFENSE -->
+        <section class="story-section" id="sec-6" style="justify-content: center; text-align: center;">
+            <div class="story-card" style="max-width: 820px;">
+                <div class="card-tag" style="justify-content: center;">EPILOGUE: STRATEGIC IMPACT & VIVA DEFENSE</div>
+                <h2 class="card-title">The Turnaround Blueprint</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: left; margin: 1.5rem 0;">
+                    <div style="background: rgba(255,51,102,0.1); border: 1px solid var(--red); border-radius: 10px; padding: 12px;">
+                        <div style="color: var(--red); font-weight: bold; font-size: 13px;">1. 20% DISCOUNT CAP</div>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Recovers 3% to 5% operating profit.</div>
+                    </div>
+                    <div style="background: rgba(245,166,35,0.1); border: 1px solid var(--amber); border-radius: 10px; padding: 12px;">
+                        <div style="color: var(--amber); font-weight: bold; font-size: 13px;">2. SKU BUNDLING</div>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Stops $21,000+ annual table losses.</div>
+                    </div>
+                    <div style="background: rgba(0,242,254,0.1); border: 1px solid var(--cyan); border-radius: 10px; padding: 12px;">
+                        <div style="color: var(--cyan); font-weight: bold; font-size: 13px;">3. VIP LOYALTY</div>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Lifts customer LTV by +18%.</div>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--cyan); font-family: 'JetBrains Mono';">
+                    Department of CSE • United Institute of Technology (284), AKTU Lucknow
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JAVASCRIPT & THREE.JS 3D SCROLL CHOREOGRAPHY -->
+    <script>
+        const customerPoints = [{"id": "1", "age": 19, "income": 15, "spending": 39, "cluster": 4}, {"id": "2", "age": 21, "income": 15, "spending": 81, "cluster": 4}, {"id": "3", "age": 20, "income": 16, "spending": 6, "cluster": 5}, {"id": "4", "age": 23, "income": 16, "spending": 77, "cluster": 4}, {"id": "5", "age": 31, "income": 17, "spending": 40, "cluster": 5}, {"id": "6", "age": 22, "income": 17, "spending": 76, "cluster": 4}, {"id": "7", "age": 35, "income": 18, "spending": 6, "cluster": 5}, {"id": "8", "age": 23, "income": 18, "spending": 94, "cluster": 4}, {"id": "9", "age": 64, "income": 19, "spending": 3, "cluster": 5}, {"id": "10", "age": 30, "income": 19, "spending": 72, "cluster": 4}, {"id": "11", "age": 67, "income": 19, "spending": 14, "cluster": 5}, {"id": "12", "age": 35, "income": 19, "spending": 99, "cluster": 4}, {"id": "13", "age": 58, "income": 20, "spending": 15, "cluster": 5}, {"id": "14", "age": 24, "income": 20, "spending": 77, "cluster": 4}, {"id": "15", "age": 37, "income": 20, "spending": 13, "cluster": 5}, {"id": "16", "age": 22, "income": 20, "spending": 79, "cluster": 4}, {"id": "17", "age": 35, "income": 21, "spending": 35, "cluster": 5}, {"id": "18", "age": 20, "income": 21, "spending": 66, "cluster": 4}, {"id": "19", "age": 52, "income": 23, "spending": 29, "cluster": 5}, {"id": "20", "age": 35, "income": 23, "spending": 98, "cluster": 4}, {"id": "21", "age": 35, "income": 24, "spending": 35, "cluster": 5}, {"id": "22", "age": 25, "income": 24, "spending": 73, "cluster": 4}, {"id": "23", "age": 46, "income": 25, "spending": 5, "cluster": 5}, {"id": "24", "age": 31, "income": 25, "spending": 73, "cluster": 4}, {"id": "25", "age": 54, "income": 28, "spending": 14, "cluster": 5}, {"id": "26", "age": 29, "income": 28, "spending": 82, "cluster": 4}, {"id": "27", "age": 45, "income": 28, "spending": 32, "cluster": 5}, {"id": "28", "age": 35, "income": 28, "spending": 61, "cluster": 4}, {"id": "29", "age": 40, "income": 29, "spending": 31, "cluster": 5}, {"id": "30", "age": 23, "income": 29, "spending": 87, "cluster": 4}, {"id": "31", "age": 60, "income": 30, "spending": 4, "cluster": 5}, {"id": "32", "age": 21, "income": 30, "spending": 73, "cluster": 4}, {"id": "33", "age": 53, "income": 33, "spending": 4, "cluster": 5}, {"id": "34", "age": 18, "income": 33, "spending": 92, "cluster": 4}, {"id": "35", "age": 49, "income": 33, "spending": 14, "cluster": 5}, {"id": "36", "age": 21, "income": 33, "spending": 81, "cluster": 4}, {"id": "37", "age": 42, "income": 34, "spending": 17, "cluster": 5}, {"id": "38", "age": 30, "income": 34, "spending": 73, "cluster": 4}, {"id": "39", "age": 36, "income": 37, "spending": 26, "cluster": 5}, {"id": "40", "age": 20, "income": 37, "spending": 75, "cluster": 4}, {"id": "41", "age": 65, "income": 38, "spending": 35, "cluster": 0}, {"id": "42", "age": 24, "income": 38, "spending": 92, "cluster": 4}, {"id": "43", "age": 48, "income": 39, "spending": 36, "cluster": 5}, {"id": "44", "age": 31, "income": 39, "spending": 61, "cluster": 1}, {"id": "45", "age": 49, "income": 39, "spending": 28, "cluster": 5}, {"id": "46", "age": 24, "income": 39, "spending": 65, "cluster": 4}, {"id": "47", "age": 50, "income": 40, "spending": 55, "cluster": 0}, {"id": "48", "age": 27, "income": 40, "spending": 47, "cluster": 1}, {"id": "49", "age": 29, "income": 40, "spending": 42, "cluster": 1}, {"id": "50", "age": 31, "income": 40, "spending": 42, "cluster": 1}, {"id": "51", "age": 49, "income": 42, "spending": 52, "cluster": 0}, {"id": "52", "age": 33, "income": 42, "spending": 60, "cluster": 1}, {"id": "53", "age": 31, "income": 43, "spending": 54, "cluster": 1}, {"id": "54", "age": 59, "income": 43, "spending": 60, "cluster": 0}, {"id": "55", "age": 50, "income": 43, "spending": 45, "cluster": 0}, {"id": "56", "age": 47, "income": 43, "spending": 41, "cluster": 0}, {"id": "57", "age": 51, "income": 44, "spending": 50, "cluster": 0}, {"id": "58", "age": 69, "income": 44, "spending": 46, "cluster": 0}, {"id": "59", "age": 27, "income": 46, "spending": 51, "cluster": 1}, {"id": "60", "age": 53, "income": 46, "spending": 46, "cluster": 0}, {"id": "61", "age": 70, "income": 46, "spending": 56, "cluster": 0}, {"id": "62", "age": 19, "income": 46, "spending": 55, "cluster": 1}, {"id": "63", "age": 67, "income": 47, "spending": 52, "cluster": 0}, {"id": "64", "age": 54, "income": 47, "spending": 59, "cluster": 0}, {"id": "65", "age": 63, "income": 48, "spending": 51, "cluster": 0}, {"id": "66", "age": 18, "income": 48, "spending": 59, "cluster": 1}, {"id": "67", "age": 43, "income": 48, "spending": 50, "cluster": 0}, {"id": "68", "age": 68, "income": 48, "spending": 48, "cluster": 0}, {"id": "69", "age": 19, "income": 48, "spending": 59, "cluster": 1}, {"id": "70", "age": 32, "income": 48, "spending": 47, "cluster": 1}, {"id": "71", "age": 70, "income": 49, "spending": 55, "cluster": 0}, {"id": "72", "age": 47, "income": 49, "spending": 42, "cluster": 0}, {"id": "73", "age": 60, "income": 50, "spending": 49, "cluster": 0}, {"id": "74", "age": 60, "income": 50, "spending": 56, "cluster": 0}, {"id": "75", "age": 59, "income": 54, "spending": 47, "cluster": 0}, {"id": "76", "age": 26, "income": 54, "spending": 54, "cluster": 1}, {"id": "77", "age": 45, "income": 54, "spending": 53, "cluster": 0}, {"id": "78", "age": 40, "income": 54, "spending": 48, "cluster": 1}, {"id": "79", "age": 23, "income": 54, "spending": 52, "cluster": 1}, {"id": "80", "age": 49, "income": 54, "spending": 42, "cluster": 0}, {"id": "81", "age": 57, "income": 54, "spending": 51, "cluster": 0}, {"id": "82", "age": 38, "income": 54, "spending": 55, "cluster": 1}, {"id": "83", "age": 67, "income": 54, "spending": 41, "cluster": 0}, {"id": "84", "age": 46, "income": 54, "spending": 44, "cluster": 0}, {"id": "85", "age": 21, "income": 54, "spending": 57, "cluster": 1}, {"id": "86", "age": 48, "income": 54, "spending": 46, "cluster": 0}, {"id": "87", "age": 55, "income": 57, "spending": 58, "cluster": 0}, {"id": "88", "age": 22, "income": 57, "spending": 55, "cluster": 1}, {"id": "89", "age": 34, "income": 58, "spending": 60, "cluster": 1}, {"id": "90", "age": 50, "income": 58, "spending": 46, "cluster": 0}, {"id": "91", "age": 68, "income": 59, "spending": 55, "cluster": 0}, {"id": "92", "age": 18, "income": 59, "spending": 41, "cluster": 1}, {"id": "93", "age": 48, "income": 60, "spending": 49, "cluster": 0}, {"id": "94", "age": 40, "income": 60, "spending": 40, "cluster": 1}, {"id": "95", "age": 32, "income": 60, "spending": 42, "cluster": 1}, {"id": "96", "age": 24, "income": 60, "spending": 52, "cluster": 1}, {"id": "97", "age": 47, "income": 60, "spending": 47, "cluster": 0}, {"id": "98", "age": 27, "income": 60, "spending": 50, "cluster": 1}, {"id": "99", "age": 48, "income": 61, "spending": 42, "cluster": 0}, {"id": "100", "age": 20, "income": 61, "spending": 49, "cluster": 1}, {"id": "101", "age": 23, "income": 62, "spending": 41, "cluster": 1}, {"id": "102", "age": 49, "income": 62, "spending": 48, "cluster": 0}, {"id": "103", "age": 67, "income": 62, "spending": 59, "cluster": 0}, {"id": "104", "age": 26, "income": 62, "spending": 55, "cluster": 1}, {"id": "105", "age": 49, "income": 62, "spending": 56, "cluster": 0}, {"id": "106", "age": 21, "income": 62, "spending": 42, "cluster": 1}, {"id": "107", "age": 66, "income": 63, "spending": 50, "cluster": 0}, {"id": "108", "age": 54, "income": 63, "spending": 46, "cluster": 0}, {"id": "109", "age": 68, "income": 63, "spending": 43, "cluster": 0}, {"id": "110", "age": 66, "income": 63, "spending": 48, "cluster": 0}, {"id": "111", "age": 65, "income": 63, "spending": 52, "cluster": 0}, {"id": "112", "age": 19, "income": 63, "spending": 54, "cluster": 1}, {"id": "113", "age": 38, "income": 64, "spending": 42, "cluster": 1}, {"id": "114", "age": 19, "income": 64, "spending": 46, "cluster": 1}, {"id": "115", "age": 18, "income": 65, "spending": 48, "cluster": 1}, {"id": "116", "age": 19, "income": 65, "spending": 50, "cluster": 1}, {"id": "117", "age": 63, "income": 65, "spending": 43, "cluster": 0}, {"id": "118", "age": 49, "income": 65, "spending": 59, "cluster": 0}, {"id": "119", "age": 51, "income": 67, "spending": 43, "cluster": 0}, {"id": "120", "age": 50, "income": 67, "spending": 57, "cluster": 0}, {"id": "121", "age": 27, "income": 67, "spending": 56, "cluster": 1}, {"id": "122", "age": 38, "income": 67, "spending": 40, "cluster": 1}, {"id": "123", "age": 40, "income": 69, "spending": 58, "cluster": 1}, {"id": "124", "age": 39, "income": 69, "spending": 91, "cluster": 3}, {"id": "125", "age": 23, "income": 70, "spending": 29, "cluster": 1}, {"id": "126", "age": 31, "income": 70, "spending": 77, "cluster": 3}, {"id": "127", "age": 43, "income": 71, "spending": 35, "cluster": 2}, {"id": "128", "age": 40, "income": 71, "spending": 95, "cluster": 3}, {"id": "129", "age": 59, "income": 71, "spending": 11, "cluster": 2}, {"id": "130", "age": 38, "income": 71, "spending": 75, "cluster": 3}, {"id": "131", "age": 47, "income": 71, "spending": 9, "cluster": 2}, {"id": "132", "age": 39, "income": 71, "spending": 75, "cluster": 3}, {"id": "133", "age": 25, "income": 72, "spending": 34, "cluster": 1}, {"id": "134", "age": 31, "income": 72, "spending": 71, "cluster": 3}, {"id": "135", "age": 20, "income": 73, "spending": 5, "cluster": 2}, {"id": "136", "age": 29, "income": 73, "spending": 88, "cluster": 3}, {"id": "137", "age": 44, "income": 73, "spending": 7, "cluster": 2}, {"id": "138", "age": 32, "income": 73, "spending": 73, "cluster": 3}, {"id": "139", "age": 19, "income": 74, "spending": 10, "cluster": 1}, {"id": "140", "age": 35, "income": 74, "spending": 72, "cluster": 3}, {"id": "141", "age": 57, "income": 75, "spending": 5, "cluster": 2}, {"id": "142", "age": 32, "income": 75, "spending": 93, "cluster": 3}, {"id": "143", "age": 28, "income": 76, "spending": 40, "cluster": 1}, {"id": "144", "age": 32, "income": 76, "spending": 87, "cluster": 3}, {"id": "145", "age": 25, "income": 77, "spending": 12, "cluster": 2}, {"id": "146", "age": 28, "income": 77, "spending": 97, "cluster": 3}, {"id": "147", "age": 48, "income": 77, "spending": 36, "cluster": 2}, {"id": "148", "age": 32, "income": 77, "spending": 74, "cluster": 3}, {"id": "149", "age": 34, "income": 78, "spending": 22, "cluster": 2}, {"id": "150", "age": 34, "income": 78, "spending": 90, "cluster": 3}, {"id": "151", "age": 43, "income": 78, "spending": 17, "cluster": 2}, {"id": "152", "age": 39, "income": 78, "spending": 88, "cluster": 3}, {"id": "153", "age": 44, "income": 78, "spending": 20, "cluster": 2}, {"id": "154", "age": 38, "income": 78, "spending": 76, "cluster": 3}, {"id": "155", "age": 47, "income": 78, "spending": 16, "cluster": 2}, {"id": "156", "age": 27, "income": 78, "spending": 89, "cluster": 3}, {"id": "157", "age": 37, "income": 78, "spending": 1, "cluster": 2}, {"id": "158", "age": 30, "income": 78, "spending": 78, "cluster": 3}, {"id": "159", "age": 34, "income": 78, "spending": 1, "cluster": 2}, {"id": "160", "age": 30, "income": 78, "spending": 73, "cluster": 3}, {"id": "161", "age": 56, "income": 79, "spending": 35, "cluster": 0}, {"id": "162", "age": 29, "income": 79, "spending": 83, "cluster": 3}, {"id": "163", "age": 19, "income": 81, "spending": 5, "cluster": 2}, {"id": "164", "age": 31, "income": 81, "spending": 93, "cluster": 3}, {"id": "165", "age": 50, "income": 85, "spending": 26, "cluster": 2}, {"id": "166", "age": 36, "income": 85, "spending": 75, "cluster": 3}, {"id": "167", "age": 42, "income": 86, "spending": 20, "cluster": 2}, {"id": "168", "age": 33, "income": 86, "spending": 95, "cluster": 3}, {"id": "169", "age": 36, "income": 87, "spending": 27, "cluster": 2}, {"id": "170", "age": 32, "income": 87, "spending": 63, "cluster": 3}, {"id": "171", "age": 40, "income": 87, "spending": 13, "cluster": 2}, {"id": "172", "age": 28, "income": 87, "spending": 75, "cluster": 3}, {"id": "173", "age": 36, "income": 87, "spending": 10, "cluster": 2}, {"id": "174", "age": 36, "income": 87, "spending": 92, "cluster": 3}, {"id": "175", "age": 52, "income": 88, "spending": 13, "cluster": 2}, {"id": "176", "age": 30, "income": 88, "spending": 86, "cluster": 3}, {"id": "177", "age": 58, "income": 88, "spending": 15, "cluster": 2}, {"id": "178", "age": 27, "income": 88, "spending": 69, "cluster": 3}, {"id": "179", "age": 59, "income": 93, "spending": 14, "cluster": 2}, {"id": "180", "age": 35, "income": 93, "spending": 90, "cluster": 3}, {"id": "181", "age": 37, "income": 97, "spending": 32, "cluster": 2}, {"id": "182", "age": 32, "income": 97, "spending": 86, "cluster": 3}, {"id": "183", "age": 46, "income": 98, "spending": 15, "cluster": 2}, {"id": "184", "age": 29, "income": 98, "spending": 88, "cluster": 3}, {"id": "185", "age": 41, "income": 99, "spending": 39, "cluster": 2}, {"id": "186", "age": 30, "income": 99, "spending": 97, "cluster": 3}, {"id": "187", "age": 54, "income": 101, "spending": 24, "cluster": 2}, {"id": "188", "age": 28, "income": 101, "spending": 68, "cluster": 3}, {"id": "189", "age": 41, "income": 103, "spending": 17, "cluster": 2}, {"id": "190", "age": 36, "income": 103, "spending": 85, "cluster": 3}, {"id": "191", "age": 34, "income": 103, "spending": 23, "cluster": 2}, {"id": "192", "age": 32, "income": 103, "spending": 69, "cluster": 3}, {"id": "193", "age": 33, "income": 113, "spending": 8, "cluster": 2}, {"id": "194", "age": 38, "income": 113, "spending": 91, "cluster": 3}, {"id": "195", "age": 47, "income": 120, "spending": 16, "cluster": 2}, {"id": "196", "age": 35, "income": 120, "spending": 79, "cluster": 3}, {"id": "197", "age": 45, "income": 126, "spending": 28, "cluster": 2}, {"id": "198", "age": 32, "income": 126, "spending": 74, "cluster": 3}, {"id": "199", "age": 32, "income": 137, "spending": 18, "cluster": 2}, {"id": "200", "age": 30, "income": 137, "spending": 83, "cluster": 3}];
+        const customerCentroids = [{"Cluster": 0, "Age": 56.333333333333336, "Annual Income (k$)": 54.266666666666666, "Spending Score (1-100)": 49.06666666666667}, {"Cluster": 1, "Age": 26.794871794871796, "Annual Income (k$)": 57.1025641025641, "Spending Score (1-100)": 48.12820512820513}, {"Cluster": 2, "Age": 41.93939393939394, "Annual Income (k$)": 88.93939393939394, "Spending Score (1-100)": 16.96969696969697}, {"Cluster": 3, "Age": 32.69230769230769, "Annual Income (k$)": 86.53846153846153, "Spending Score (1-100)": 82.12820512820512}, {"Cluster": 4, "Age": 25.0, "Annual Income (k$)": 25.26086956521739, "Spending Score (1-100)": 77.6086956521739}, {"Cluster": 5, "Age": 45.523809523809526, "Annual Income (k$)": 26.285714285714285, "Spending Score (1-100)": 19.38095238095238}];
+
+        const clusterColors = {
+            0: 0xf5a623, 1: 0x00f2fe, 2: 0xff007f, 
+            3: 0x00f5a0, 4: 0xa855f7, 5: 0x3b82f6
+        };
+
+        let scene, camera, renderer;
+        let nexusGroup, pillarsGroup, cliffMesh, customerGroup;
+        let scrollY = 0, targetScrollY = 0;
+        let isAutoScrolling = false;
+
+        function initThree() {
+            const canvas = document.getElementById('webgl-canvas');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 18);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Ambient + Directional Lights
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+            const dirLight = new THREE.DirectionalLight(0x00f2fe, 1.2);
+            dirLight.position.set(5, 12, 10);
+            scene.add(dirLight);
+
+            // 1. Build 3D Nexus (Core)
+            nexusGroup = new THREE.Group();
+            scene.add(nexusGroup);
+
+            const icoGeom = new THREE.IcosahedronGeometry(3.5, 1);
+            const icoMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.65 });
+            const icoMesh = new THREE.Mesh(icoGeom, icoMat);
+            nexusGroup.add(icoMesh);
+
+            const ring1Geom = new THREE.TorusGeometry(4.8, 0.04, 16, 100);
+            const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x00f5a0, transparent: true, opacity: 0.8 });
+            const ring1 = new THREE.Mesh(ring1Geom, ring1Mat);
+            ring1.rotation.x = Math.PI / 3;
+            nexusGroup.add(ring1);
+
+            const ring2Geom = new THREE.TorusGeometry(5.4, 0.03, 16, 100);
+            const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, transparent: true, opacity: 0.6 });
+            const ring2 = new THREE.Mesh(ring2Geom, ring2Mat);
+            ring2.rotation.y = Math.PI / 4;
+            nexusGroup.add(ring2);
+
+            // 2. Build 3D Category Pillars
+            pillarsGroup = new THREE.Group();
+            pillarsGroup.position.set(5, -1, 0);
+            pillarsGroup.visible = false;
+            scene.add(pillarsGroup);
+
+            const techCyl = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.9, 0.9, 5.5, 32),
+                new THREE.MeshStandardMaterial({ color: 0x00f2fe, roughness: 0.2, metalness: 0.8 })
+            );
+            techCyl.position.set(-2.5, 2.75, 0);
+            pillarsGroup.add(techCyl);
+
+            const offCyl = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.9, 0.9, 4.8, 32),
+                new THREE.MeshStandardMaterial({ color: 0x00f5a0, roughness: 0.2, metalness: 0.8 })
+            );
+            offCyl.position.set(0, 2.4, 0);
+            pillarsGroup.add(offCyl);
+
+            const furnCyl = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.9, 0.9, 4.9, 32),
+                new THREE.MeshStandardMaterial({ color: 0xff3366, roughness: 0.3, metalness: 0.7 })
+            );
+            furnCyl.position.set(2.5, 2.45, 0);
+            pillarsGroup.add(furnCyl);
+
+            // 3. Build 3D Customer Segmentation Space
+            customerGroup = new THREE.Group();
+            customerGroup.visible = false;
+            scene.add(customerGroup);
+
+            // Customer Bounding Box
+            const boxGeom = new THREE.BoxGeometry(12, 10, 10);
+            const boxEdges = new THREE.EdgesGeometry(boxGeom);
+            const boxLine = new THREE.LineSegments(boxEdges, new THREE.LineBasicMaterial({ color: 0x334155 }));
+            boxLine.position.set(0, 5, 0);
+            customerGroup.add(boxLine);
+
+            const grid = new THREE.GridHelper(12, 12, 0x00f2fe, 0x1e293b);
+            customerGroup.add(grid);
+
+            function mapCoords(inc, spd, age) {
+                return {
+                    x: ((inc - 15) / (140 - 15)) * 12 - 6,
+                    y: (spd / 100) * 9 + 0.5,
+                    z: ((age - 18) / (70 - 18)) * 10 - 5
+                };
+            }
+
+            const sphereGeom = new THREE.SphereGeometry(0.22, 16, 16);
+            customerPoints.forEach((p) => {
+                const c = mapCoords(p.income, p.spending, p.age);
+                const col = clusterColors[p.cluster] || 0x00f2fe;
+                const mat = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.4 });
+                const m = new THREE.Mesh(sphereGeom, mat);
+                m.position.set(c.x, c.y, c.z);
+                customerGroup.add(m);
+            });
+
+            const centGeom = new THREE.SphereGeometry(0.5, 32, 32);
+            customerCentroids.forEach((c) => {
+                const coords = mapCoords(c['Annual Income (k$)'], c['Spending Score (1-100)'], c['Age']);
+                const col = clusterColors[c.Cluster] || 0x00f2fe;
+                const cent = new THREE.Mesh(centGeom, new THREE.MeshBasicMaterial({ color: col }));
+                cent.position.set(coords.x, coords.y, coords.z);
+                customerGroup.add(cent);
+            });
+        }
+
+        // Smooth Scroll Listeners
+        window.addEventListener('scroll', () => {
+            targetScrollY = window.scrollY;
+        });
+
+        function scrollToChapter(idx) {
+            const totalH = document.documentElement.scrollHeight - window.innerHeight;
+            const target = (idx / 6) * totalH;
+            window.scrollTo({ top: target, behavior: 'smooth' });
+        }
+
+        function toggleAutoScroll() {
+            isAutoScrolling = !isAutoScrolling;
+            const btn = document.getElementById('btn-autoscroll');
+            btn.classList.toggle('active', isAutoScrolling);
+            btn.innerHTML = isAutoScrolling ? '<span>⏸</span> Pause Movie' : '<span>▶</span> Auto-Play Movie';
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // Animation Loop with Continuous 3D Morph & Scroll Lerp
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isAutoScrolling) {
+                targetScrollY += 4.5;
+                const maxS = document.documentElement.scrollHeight - window.innerHeight;
+                if (targetScrollY >= maxS) targetScrollY = 0;
+                window.scrollTo(0, targetScrollY);
+            }
+
+            scrollY += (targetScrollY - scrollY) * 0.08;
+            const maxScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+            const progress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+
+            document.getElementById('scroll-pct-display').innerText = `SCROLL PROGRESS: ${(progress * 100).toFixed(0)}%`;
+
+            // Active Chapter Detection
+            const chapterIdx = Math.min(Math.floor(progress * 6.99), 6);
+            document.querySelectorAll('.story-section').forEach((s, idx) => {
+                s.classList.toggle('active', idx === chapterIdx);
+            });
+            document.querySelectorAll('.chapter-dot').forEach((d, idx) => {
+                d.classList.toggle('active', idx === chapterIdx);
+            });
+
+            // CONTINUOUS 3D CAMERA & MODEL CHOREOGRAPHY
+            if (progress < 0.15) {
+                // Section 0: Center Stage Nexus
+                nexusGroup.visible = true;
+                pillarsGroup.visible = false;
+                customerGroup.visible = false;
+
+                nexusGroup.position.set(0, 0, 0);
+                nexusGroup.scale.set(1, 1, 1);
+                nexusGroup.rotation.y += 0.006;
+                nexusGroup.rotation.x = progress * 2;
+                camera.position.set(0, 0, 18 - progress * 15);
+            } else if (progress < 0.30) {
+                // Section 1: Dolly Left to (-6, 0, 0)
+                const t = (progress - 0.15) / 0.15;
+                nexusGroup.visible = true;
+                pillarsGroup.visible = false;
+                customerGroup.visible = false;
+
+                nexusGroup.position.x = -6 * t;
+                nexusGroup.position.y = 0.5 * t;
+                nexusGroup.scale.set(1 - 0.2*t, 1 - 0.2*t, 1 - 0.2*t);
+                nexusGroup.rotation.y += 0.008;
+                camera.position.set(0, 0, 16);
+            } else if (progress < 0.45) {
+                // Section 2: Swoop into Category Pillars
+                const t = (progress - 0.30) / 0.15;
+                nexusGroup.visible = (1 - t > 0.05);
+                pillarsGroup.visible = true;
+                customerGroup.visible = false;
+
+                pillarsGroup.position.x = 4 - 2 * t;
+                pillarsGroup.rotation.y = -0.5 + t * 0.8;
+                camera.position.set(0, 3 + t * 2, 16 - t * 4);
+            } else if (progress < 0.60) {
+                // Section 3: The 20% Discount Cliff
+                const t = (progress - 0.45) / 0.15;
+                nexusGroup.visible = false;
+                pillarsGroup.visible = true;
+                customerGroup.visible = false;
+
+                pillarsGroup.rotation.y = 0.3 + t * 1.5;
+                camera.position.set(-2 + t * 4, 4 - t * 2, 12);
+            } else if (progress < 0.75) {
+                // Section 4: 3D Customer Galaxy
+                const t = (progress - 0.60) / 0.15;
+                nexusGroup.visible = false;
+                pillarsGroup.visible = false;
+                customerGroup.visible = true;
+
+                customerGroup.position.set(0, -2, 0);
+                customerGroup.rotation.y = t * Math.PI * 1.5;
+                camera.position.set(15 - t * 4, 12, 18 - t * 3);
+            } else if (progress < 0.90) {
+                // Section 5: VIP Luxury & Youth Zoom
+                const t = (progress - 0.75) / 0.15;
+                nexusGroup.visible = false;
+                pillarsGroup.visible = false;
+                customerGroup.visible = true;
+
+                // Fly directly into VIP coordinate cluster
+                customerGroup.rotation.y = Math.PI * 1.5 + t * 0.8;
+                camera.position.set(8 - t * 2, 8 + t * 2, 12 - t * 5);
+            } else {
+                // Section 6: Finale Horizon Pull-back
+                const t = (progress - 0.90) / 0.10;
+                nexusGroup.visible = true;
+                pillarsGroup.visible = false;
+                customerGroup.visible = true;
+
+                nexusGroup.position.set(0, -3 + t * 2, 0);
+                nexusGroup.scale.set(0.6, 0.6, 0.6);
+                customerGroup.position.set(0, -2, 0);
+                camera.position.set(0, 4, 20);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initThree();
+            animate();
+        });
+    </script>
+</body>
+</html>

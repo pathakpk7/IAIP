@@ -1,132 +1,82 @@
-# Intern Alpha — Data Analytics Internship
+# Intern Alpha — Data Analytics Internship Portfolio (IAIP)
 
-## IAIP Internship Project Repository
+[![GitHub Pages Live Dashboard](https://img.shields.io/badge/Live%20Dashboard-GitHub%20Pages-0e8de9?style=for-the-badge&logo=github&logoColor=white)](https://pathakpk7.github.io/IAIP/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-K--Means-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-This repository contains the projects completed as part of my **Data Analytics Internship at Intern Alpha**.
-
-The purpose of this repository is to document the practical work completed during the internship, including data analysis, visualization, machine learning, customer analysis, and business-oriented insights.
-
----
-
-## Internship Overview
-
-| Detail                | Information    |
-| --------------------- | -------------- |
-| **Organization**      | Intern Alpha   |
-| **Internship Domain** | Data Analytics |
-| **Repository**        | `IAIP`         |
-| **Primary Language**  | Python         |
-| **Status**            | Ongoing        |
+> **Live Interactive Web Dashboard**: Access the complete interactive dashboard comparing both tasks with live interactive charts, an interactive customer cluster classifier, and data storytelling at:  
+> 👉 **[https://pathakpk7.github.io/IAIP/](https://pathakpk7.github.io/IAIP/)**
 
 ---
 
-# Internship Tasks
+## 📌 Executive Summary
 
-## Task 1 — Sales Data Analysis
+This repository contains the end-to-end data analytics and unsupervised machine learning projects completed during my **Data Analytics Internship at Intern Alpha**. 
 
-**Status: Completed**
-
-A comprehensive exploratory analysis of the Sample Superstore dataset.
-
-### Objectives
-
-* Analyze overall sales performance
-* Identify yearly and monthly sales trends
-* Detect seasonal patterns
-* Evaluate customer segments
-* Analyze categories and sub-categories
-* Identify high-performing and loss-making products
-* Compare regional performance
-* Investigate discount and profitability patterns
-* Develop data-driven business recommendations
-
-### Technologies
-
-* Python
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Jupyter Notebook
-
-### Key Results
-
-The analysis identified:
-
-* Approximately **$2.30M in total sales**
-* Approximately **$286K in total profit**
-* **12.47% overall profit margin**
-* Approximately **51% sales growth from 2014 to 2017**
-* Strong year-end sales performance, particularly in **November and December**
-* **Technology** as the strongest major category by profit
-* **Tables** generating more than $206K in sales while producing a loss of approximately $17.7K
-* A strong association between higher discount levels and lower profitability
-* Significant differences in profitability across geographic regions
-
-### Project Files
-
-[View Task 1](./Task-1-Sales-Data-Analysis/)
-
-### Main Outputs
-
-* Sales trend analysis
-* Seasonal analysis
-* Sales heatmap
-* Category performance
-* Sub-category profitability
-* Discount vs profit analysis
-* Business recommendations
+Rather than confining insights to raw Jupyter Notebooks, the entire project has been elevated into an **interactive executive dashboard (`index.html`)** hosted directly on **GitHub Pages**, featuring:
+* **Dual Task Navigation in Navbar**: Easily toggle between **Task 1 (Sales Diagnostic)** and **Task 2 (Customer Clustering)** with single-click tabs.
+* **Pure Inline SVGs**: Clean, high-performance vector icons throughout the interface.
+* **Interactive Data Visualizations**: Dynamic Chart.js visualizations with custom tooltips, zoom modals, and trendlines.
+* **What-If Customer Segment Classifier**: Real-time interactive tool where users can adjust Age, Income, and Spending Score sliders to predict the customer cluster and recommended marketing action.
+* **Cross-Task Strategic Synergy**: Synthesis connecting high-margin product categories with high-value customer personas.
 
 ---
 
-# Task 2 — Customer Segmentation
+## 📊 Overview of Internship Tasks
 
-**Status: Planned / In Progress**
+### 📈 Task 1 — Retail Sales Performance & Profitability Analysis
+* **Dataset**: *Sample Superstore* (9,994 transactional records, 21 attributes, 2014–2017)
+* **Key Focus**: Diagnostic sales analytics, time-series growth, regional variance, seasonality cycles, and discount profit-erosion.
+* **Major Findings**:
+  * **$2,297,200.86 in Gross Revenue** and **$286,397.02 in Net Profit** (12.47% margin).
+  * **+51.2% Sales Growth** over 4 years with peak demand concentrated in November & December.
+  * **Technology** proved to be the most lucrative category ($836K sales, $145K profit, 17.4% margin).
+  * **Tables Sub-Category Anomaly**: Generated $206.9K in sales but recorded a net aggregate loss of **-$17,725**.
+  * **The 30% Discount Cliff**: Aggregate transactions receiving discounts $\ge 30\%$ generated steep net losses (loss-making transactions averaged 48.09% discount).
+  * **Regional Disparities**: West region achieved a **14.94% margin** vs Central region at **7.92%**.
 
-Customer segmentation using machine learning and clustering techniques.
-
-### Planned Objectives
-
-* Explore customer purchasing behavior
-* Prepare customer-level analytical features
-* Scale numerical features
-* Determine an appropriate number of clusters
-* Apply K-Means clustering
-* Visualize customer segments
-* Profile each customer group
-* Develop business and marketing recommendations
-
-### Planned Technologies
-
-* Python
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Scikit-learn
-* K-Means Clustering
-* Jupyter Notebook
-
-### Project Files
-
-[View Task 2](./Task-2-Customer-Segmentation/)
+### 👥 Task 2 — Customer Segmentation Using K-Means Clustering
+* **Dataset**: *Mall Customer Segmentation Dataset* (200 customer profiles, Kaggle)
+* **Key Focus**: Unsupervised machine learning, feature standardization (`StandardScaler`), cluster evaluation via **Elbow Method (WCSS)** and **Silhouette Score Analysis**, and actionable persona profiling.
+* **Major Findings**:
+  * Successfully validated **$K = 6$ optimal clusters** across standardized 3D feature space (Age, Annual Income, Spending Score).
+  * **Cluster 3 (Champions / High Income, High Spending)**: Average age 32.7, income $86.5K, spending score 82.1. Crown-jewel demographic for luxury tech and premium lines with zero discounting needed.
+  * **Cluster 2 (Untapped Wealth / High Income, Low Spending)**: 33 affluent customers with conservative spending habits (17.3 score), prime for prestige re-engagement campaigns.
+  * **Cluster 4 (Young Enthusiasts / Low Income, High Spending)**: Young trend-seekers (avg age 25.3) responsive to BNPL financing, capsule drops, and flash sales.
+  * **Cluster 0 & 1 (Moderate Spenders)**: Mature (49 yrs) and Young (25 yrs) stable consumers seeking consistency and digital convenience.
+  * **Cluster 5 (Frugal Essentials / Low Income, Low Spending)**: Value-driven shoppers responsive to bulk discounts and clearance promotions.
 
 ---
 
-# Repository Structure
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| **Data Processing & ML** | Python 3.11, Pandas, NumPy, Scikit-learn (`StandardScaler`, `KMeans`, `silhouette_score`) |
+| **Statistical Plotting** | Matplotlib, Seaborn |
+| **Interactive Live Dashboard** | HTML5, Tailwind CSS, Chart.js 4.4, Pure Inline SVG Icons |
+| **Deployment & Hosting** | GitHub Pages (Static HTTPS, zero backend dependencies) |
+| **Presentation Assets** | Microsoft PowerPoint (`.pptx`), 3D Rendered Story Assets |
+
+---
+
+## 📁 Repository Structure
 
 ```text
 IAIP/
+├── index.html                               # Live Unified Interactive Dashboard (GitHub Pages root)
+├── README.md                                # Comprehensive Repository Documentation
+├── requirements.txt                         # Python dependencies
+├── Mini_Project_Presentation.pptx           # Executive Slide Deck
+├── Cinematic_Story_3D_Morph_Presentation.pptx # Cinematic 3D Morph Presentation
 │
 ├── Task-1-Sales-Data-Analysis/
-│   │
 │   ├── data/
-│   │   └── Sample - Superstore.csv
-│   │
+│   │   └── Sample - Superstore.csv          # 9,994 retail transaction records
 │   ├── notebooks/
-│   │   └── sales_data_analysis.ipynb
-│   │
-│   ├── outputs/
+│   │   └── sales_data_analysis.ipynb        # Complete exploratory data analysis
+│   ├── outputs/                             # High-resolution generated charts
 │   │   ├── yearly_sales_trend.png
 │   │   ├── monthly_sales_trend.png
 │   │   ├── seasonal_sales_pattern.png
@@ -135,233 +85,81 @@ IAIP/
 │   │   ├── category_performance.png
 │   │   ├── subcategory_profitability.png
 │   │   └── discount_vs_profit.png
-│   │
-│   ├── README.md
-│   └── requirements.txt
+│   └── README.md
 │
 ├── Task-2-Customer-Segmentation/
-│   │
 │   ├── data/
+│   │   └── Mall_Customers.csv               # 200 customer demographic & spending records
 │   ├── notebooks/
-│   ├── outputs/
-│   ├── README.md
-│   └── requirements.txt
+│   │   └── customer_segmentation.ipynb      # K-Means clustering & validation workflow
+│   ├── outputs/                             # Cluster visual outputs
+│   │   ├── age_distribution.png
+│   │   ├── age_vs_income.png
+│   │   ├── cluster_distribution.png
+│   │   ├── cluster_profile.png
+│   │   ├── correlation_matrix.png
+│   │   ├── customer_clusters.png
+│   │   ├── elbow_method.png
+│   │   ├── gender_distribution.png
+│   │   ├── income_distribution.png
+│   │   ├── income_vs_spending.png
+│   │   ├── silhouette_score.png
+│   │   └── spending_distribution.png
+│   └── README.md
 │
-├── .gitignore
-├── requirements.txt
-└── README.md
+├── outputs_flowcharts/
+│   ├── flowchart_pipeline.png               # End-to-end data pipeline diagram
+│   └── flowchart_kmeans.png                 # K-Means mathematical clustering architecture
+└── presentation_assets_3d/                  # 3D visual assets
 ```
 
 ---
 
-# Technology Stack
+## 🚀 How to Run Locally
 
-| Technology           | Usage                             |
-| -------------------- | --------------------------------- |
-| **Python**           | Core programming and analysis     |
-| **Pandas**           | Data manipulation and aggregation |
-| **NumPy**            | Numerical computation             |
-| **Matplotlib**       | Data visualization                |
-| **Seaborn**          | Statistical visualization         |
-| **Scikit-learn**     | Machine learning and clustering   |
-| **Jupyter Notebook** | Interactive analysis              |
-
----
-
-# Analytical Workflow
-
-The internship projects follow a structured data-analysis workflow:
-
-```text
-Data Collection
-      ↓
-Data Understanding
-      ↓
-Data Quality Assessment
-      ↓
-Data Cleaning
-      ↓
-Feature Engineering
-      ↓
-Exploratory Data Analysis
-      ↓
-Statistical / Machine Learning Analysis
-      ↓
-Visualization
-      ↓
-Insight Extraction
-      ↓
-Business Recommendations
-```
-
----
-
-# Task 1 Highlights
-
-### Sales Performance
-
-The Superstore analysis covers **9,994 records** across the period from **2014 to 2017**.
-
-The dataset contained no missing values or duplicate records after the initial quality assessment.
-
-### Sales Growth
-
-Sales increased from approximately:
-
-```text
-2014 → $484K
-2017 → $733K
-```
-
-representing approximately **51% growth** over the analysis period.
-
-### Seasonality
-
-The analysis showed a stronger year-end sales pattern, with **November** recording the highest average annual monthly sales and **February** the lowest.
-
-### Profitability
-
-The project demonstrates why revenue alone is insufficient for evaluating performance.
-
-For example:
-
-```text
-Tables
-Sales  → ~$207K
-Profit → ~-$17.7K
-```
-
-while other sub-categories generated significantly stronger profit margins.
-
-### Discount Analysis
-
-Higher discount levels were associated with increasingly negative profitability.
-
-The analysis showed aggregate negative profitability beginning at discount levels of approximately **30% and above**.
-
----
-
-# Project Documentation
-
-Detailed documentation for each task is available inside its respective directory.
-
-### Task 1
-
-[Sales Data Analysis README](./Task-1-Sales-Data-Analysis/README.md)
-
-### Task 2
-
-[Customer Segmentation README](./Task-2-Customer-Segmentation/README.md)
-
----
-
-# Running the Projects
-
-## Clone the Repository
-
+### 1. View the Dashboard
+Simply open `index.html` in any web browser:
 ```bash
+# On Windows
+start index.html
+```
+
+### 2. Run the Jupyter Notebooks
+```bash
+# Clone the repository
 git clone https://github.com/pathakpk7/IAIP.git
-```
-
-Move into the repository:
-
-```bash
 cd IAIP
-```
 
----
-
-## Create a Virtual Environment
-
-```bash
+# Create virtual environment
 python -m venv .venv
-```
-
-### Windows
-
-```powershell
 .\.venv\Scripts\Activate.ps1
-```
 
----
-
-## Install Dependencies
-
-For the overall repository:
-
-```bash
+# Install requirements
 pip install -r requirements.txt
-```
 
-Each task also contains its own `requirements.txt` for task-specific dependencies.
-
----
-
-## Launch Jupyter Notebook
-
-```bash
+# Launch Jupyter
 jupyter notebook
 ```
 
-Then open the required notebook from the corresponding task directory.
+---
+
+## 🌐 Enabling GitHub Pages (1-Minute Setup)
+
+To activate the live URL for your own fork or this repo:
+1. Go to your repository on GitHub: `https://github.com/pathakpk7/IAIP`.
+2. Click **Settings** (top tab) ➔ **Pages** (left navigation bar).
+3. Under **Build and deployment**:
+   * **Source**: `Deploy from a branch`
+   * **Branch**: Select `main` and folder `/(root)`
+   * Click **Save**.
+4. Your live dashboard is immediately published at:  
+   👉 **`https://pathakpk7.github.io/IAIP/`**
 
 ---
 
-# Internship Progress
+## 👤 Author
 
-| Task  | Project               | Status                    |
-| ----- | --------------------- | ------------------------- |
-| **1** | Sales Data Analysis   | **Completed**             |
-| **2** | Customer Segmentation | **In Progress / Planned** |
-
-This table will be updated as additional internship tasks are completed.
-
----
-
-# Deliverables
-
-The internship work is being documented through:
-
-* GitHub source code and notebooks
-* Generated analytical visualizations
-* Project documentation
-* Demo videos
-* LinkedIn project posts
-
-The repository serves as the central record of the completed technical work.
-
----
-
-# Learning Outcomes
-
-Through these projects, the internship work focuses on developing practical skills in:
-
-* Data cleaning
-* Exploratory data analysis
-* Feature engineering
-* Data visualization
-* Business-oriented analytical thinking
-* Statistical interpretation
-* Machine learning fundamentals
-* Customer behavior analysis
-* Communicating technical results
-* Git and GitHub project management
-
----
-
-# Author
-
-## Prasoon Pathak
-
-Computer Science Engineering Student
-Data Analytics Intern at **Intern Alpha**
-
+**Prasoon Pathak**  
+*Data Analytics Intern | InternAlpha*  
+*Computer Science & Engineering Student*  
 GitHub: [@pathakpk7](https://github.com/pathakpk7)
-
----
-
-# Acknowledgement
-
-This repository contains work completed as part of my internship at **Intern Alpha**.
-
-The projects are intended to demonstrate practical application of data analytics and machine learning techniques to real-world-style datasets.

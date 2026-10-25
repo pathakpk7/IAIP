@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth overflow-x-hidden">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>IAIP Analytics Intelligence Hub | Retail Sales & Customer Segmentation</title>
   
   <!-- Fonts -->
@@ -53,24 +53,31 @@
   </script>
 
   <style>
+    /* Prevent any horizontal overflow anywhere */
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
     /* Custom scrollbar */
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: #0b1120;
     }
     ::-webkit-scrollbar-thumb {
       background: #334155;
-      border-radius: 4px;
+      border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
       background: #475569;
     }
 
     .glass-card {
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -96,37 +103,56 @@
 
     /* Tab active indicator styling */
     .nav-btn.active {
-      background: linear-gradient(135deg, rgba(14, 141, 233, 0.25), rgba(56, 169, 247, 0.12));
-      border-color: rgba(56, 169, 247, 0.6);
+      background: linear-gradient(135deg, rgba(14, 141, 233, 0.28), rgba(56, 169, 247, 0.15));
+      border-color: rgba(56, 169, 247, 0.65);
       color: #ffffff;
       box-shadow: 0 0 15px -3px rgba(14, 141, 233, 0.4);
+    }
+
+    /* Mobile bottom/sticky nav item active */
+    .mob-nav-btn.active {
+      color: #38a9f7;
+      border-color: rgba(56, 169, 247, 0.5);
+      background: rgba(14, 141, 233, 0.15);
+    }
+
+    /* Force canvas container strict boundaries */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .chart-wrapper canvas {
+      max-width: 100% !important;
+      max-height: 100% !important;
     }
   </style>
 </head>
 
-<body class="bg-surface-950 text-slate-100 font-sans min-h-screen antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-surface-950 text-slate-100 font-sans min-h-screen antialiased selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
 
   <!-- Ambient Glow Background -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <div class="absolute -top-40 left-1/4 w-96 h-96 bg-brand-600/15 rounded-full blur-[128px]"></div>
-    <div class="absolute top-1/3 -right-20 w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[140px]"></div>
-    <div class="absolute bottom-10 left-10 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[160px]"></div>
+    <div class="absolute -top-40 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-brand-600/15 rounded-full blur-[100px] sm:blur-[128px]"></div>
+    <div class="absolute top-1/3 -right-20 w-72 sm:w-[450px] h-72 sm:h-[450px] bg-purple-600/10 rounded-full blur-[100px] sm:blur-[140px]"></div>
+    <div class="absolute bottom-10 left-10 w-72 sm:w-[500px] h-72 sm:h-[500px] bg-emerald-600/10 rounded-full blur-[100px] sm:blur-[160px]"></div>
   </div>
 
   <!-- MAIN WRAPPER -->
-  <div class="relative z-10 flex flex-col min-h-screen">
+  <div class="relative z-10 flex flex-col min-h-screen max-w-full overflow-x-hidden">
 
     <!-- TOP NAVIGATION BAR -->
-    <header class="sticky top-0 z-50 backdrop-blur-xl bg-surface-950/85 border-b border-slate-800/80">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-surface-950/90 border-b border-slate-800/80">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 sm:h-20">
           
           <!-- Logo & Brand -->
-          <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('overview')">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-brand-600 via-cyan-500 to-indigo-500 p-0.5 shadow-lg shadow-brand-500/20">
+          <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer min-w-0" onclick="switchTab('overview')">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-xl bg-gradient-to-tr from-brand-600 via-cyan-500 to-indigo-500 p-0.5 shadow-lg shadow-brand-500/20">
               <div class="w-full h-full bg-surface-950 rounded-[10px] flex items-center justify-center">
                 <!-- SVG: Dashboard / Data Hub -->
-                <svg class="w-6 h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 3v18h18"/>
                   <path d="m19 9-5 5-4-4-3 3"/>
                   <circle cx="19" cy="9" r="1.5"/>
@@ -134,21 +160,20 @@
                 </svg>
               </div>
             </div>
-            <div>
-              <div class="flex items-center space-x-2">
-                <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">IAIP Analytics</span>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider bg-brand-500/20 text-brand-300 border border-brand-500/30 rounded-full">v2.0 Live</span>
+            <div class="min-w-0">
+              <div class="flex items-center space-x-1.5 sm:space-x-2">
+                <span class="text-base sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent truncate">IAIP Analytics</span>
+                <span class="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-mono font-semibold uppercase tracking-wider bg-brand-500/20 text-brand-300 border border-brand-500/30 rounded-full shrink-0">Live</span>
               </div>
-              <p class="text-xs text-slate-400 hidden sm:block">InternAlpha Internship Portfolio &bull; Prasoon Pathak</p>
+              <p class="text-[11px] text-slate-400 hidden md:block truncate">InternAlpha Internship Portfolio &bull; Prasoon Pathak</p>
             </div>
           </div>
 
-          <!-- Desktop Navigation Tabs (Side by Side) -->
-          <nav class="hidden md:flex items-center space-x-1.5 p-1.5 bg-surface-900/90 rounded-2xl border border-slate-800 shadow-inner">
+          <!-- Desktop Navigation Tabs (Side by Side in Navbar) -->
+          <nav class="hidden lg:flex items-center space-x-1 p-1.5 bg-surface-900/90 rounded-2xl border border-slate-800 shadow-inner">
             
             <!-- Tab: Overview -->
-            <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn active flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
-              <!-- SVG: Grid / Overview -->
+            <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn active flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
               <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1.5"/>
                 <rect x="14" y="3" width="7" height="7" rx="1.5"/>
@@ -159,8 +184,7 @@
             </button>
 
             <!-- Tab: Task 1 -->
-            <button onclick="switchTab('task1')" id="nav-task1" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
-              <!-- SVG: Bar Chart / Sales -->
+            <button onclick="switchTab('task1')" id="nav-task1" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
               <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="20" x2="18" y2="10"/>
                 <line x1="12" y1="20" x2="12" y2="4"/>
@@ -170,8 +194,7 @@
             </button>
 
             <!-- Tab: Task 2 -->
-            <button onclick="switchTab('task2')" id="nav-task2" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
-              <!-- SVG: Users / Clustering -->
+            <button onclick="switchTab('task2')" id="nav-task2" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
               <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
@@ -182,8 +205,7 @@
             </button>
 
             <!-- Tab: Strategic Synergy -->
-            <button onclick="switchTab('synergy')" id="nav-synergy" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
-              <!-- SVG: Sparkles / Synergy -->
+            <button onclick="switchTab('synergy')" id="nav-synergy" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
               <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
               </svg>
@@ -191,88 +213,99 @@
             </button>
 
             <!-- Tab: Docs & Assets -->
-            <button onclick="switchTab('docs')" id="nav-docs" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
-              <!-- SVG: Document -->
+            <button onclick="switchTab('docs')" id="nav-docs" class="nav-btn flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-transparent transition-all">
               <svg class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
                 <line x1="16" y1="13" x2="8" y2="13"/>
                 <line x1="16" y1="17" x2="8" y2="17"/>
-                <line x1="10" y1="9" x2="8" y2="9"/>
               </svg>
               <span>Docs & Code</span>
             </button>
           </nav>
 
           <!-- External Actions -->
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
             <a href="https://github.com/pathakpk7/IAIP" target="_blank" rel="noopener noreferrer" 
-               class="flex items-center space-x-2 px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium rounded-xl border border-slate-700/80 transition-all hover:border-slate-500 shadow-sm"
+               class="flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700/80 transition-all hover:border-slate-500 shadow-sm"
                title="View Source on GitHub">
               <!-- SVG: GitHub Octocat -->
               <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
               </svg>
-              <span class="hidden sm:inline">GitHub</span>
+              <span>GitHub</span>
             </a>
           </div>
 
         </div>
       </div>
 
-      <!-- Mobile Sub-Navigation -->
-      <div class="md:hidden border-t border-slate-800 bg-surface-900/95 px-4 py-2 flex items-center justify-around overflow-x-auto gap-2">
-        <button onclick="switchTab('overview')" id="m-nav-overview" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300">Overview</button>
-        <button onclick="switchTab('task1')" id="m-nav-task1" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300">Task 1</button>
-        <button onclick="switchTab('task2')" id="m-nav-task2" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300">Task 2</button>
-        <button onclick="switchTab('synergy')" id="m-nav-synergy" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300">Synergy</button>
-        <button onclick="switchTab('docs')" id="m-nav-docs" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300">Docs</button>
+      <!-- Tablet/Mobile Sub-Navigation Bar (Horizontal Touch Scrolling) -->
+      <div class="lg:hidden border-t border-slate-800/80 bg-surface-900/95 px-2 py-1.5 flex items-center overflow-x-auto no-scrollbar gap-1.5">
+        <button onclick="switchTab('overview')" id="m-nav-overview" class="mob-nav-btn active whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 flex items-center space-x-1.5 border border-transparent">
+          <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Overview</span>
+        </button>
+        <button onclick="switchTab('task1')" id="m-nav-task1" class="mob-nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 flex items-center space-x-1.5 border border-transparent">
+          <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Task 1: Sales</span>
+        </button>
+        <button onclick="switchTab('task2')" id="m-nav-task2" class="mob-nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 flex items-center space-x-1.5 border border-transparent">
+          <svg class="w-3.5 h-3.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span>Task 2: Clusters</span>
+        </button>
+        <button onclick="switchTab('synergy')" id="m-nav-synergy" class="mob-nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 flex items-center space-x-1.5 border border-transparent">
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+          <span>Synergy</span>
+        </button>
+        <button onclick="switchTab('docs')" id="m-nav-docs" class="mob-nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 flex items-center space-x-1.5 border border-transparent">
+          <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Docs & Data</span>
+        </button>
       </div>
     </header>
 
     <!-- CONTENT CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 min-w-0">
 
       <!-- =============================================================== -->
       <!-- TAB 1: EXECUTIVE OVERVIEW                                        -->
       <!-- =============================================================== -->
-      <section id="tab-overview" class="tab-content space-y-8">
+      <section id="tab-overview" class="tab-content space-y-6 sm:space-y-8 min-w-0">
         
         <!-- Hero Banner -->
-        <div class="glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden border border-slate-800">
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden border border-slate-800">
           <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="max-w-3xl space-y-4">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-medium">
+          <div class="max-w-3xl space-y-3 sm:space-y-4">
+            <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-medium">
               <!-- SVG: Check Shield -->
-              <svg class="w-3.5 h-3.5 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="w-3.5 h-3.5 text-brand-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="m9 12 2 2 4-4"/>
               </svg>
-              <span>Unified Dual-Engine Analytics & Machine Learning Architecture</span>
+              <span>Dual-Engine Analytics &amp; Machine Learning</span>
             </div>
             
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Transforming Raw Data into <span class="bg-gradient-to-r from-cyan-400 via-brand-400 to-indigo-400 bg-clip-text text-transparent">Actionable Executive Intelligence</span>
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight break-words">
+              Transforming Raw Data into <span class="bg-gradient-to-r from-cyan-400 via-brand-400 to-indigo-400 bg-clip-text text-transparent">Executive Intelligence</span>
             </h1>
 
-            <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Welcome to the interactive executive control center for the <strong>InternAlpha Data Analytics Internship</strong>. 
-              This unified portal bridges deep exploratory retail analytics (Superstore dataset) and unsupervised customer behavioral clustering (K-Means ML model), delivering full transparency from raw transactional rows to high-impact corporate strategies.
+            <p class="text-slate-300 text-xs sm:text-base leading-relaxed">
+              Interactive portal for the <strong>InternAlpha Data Analytics Internship</strong> by <strong>Prasoon Pathak</strong>. 
+              Seamlessly integrates deep exploratory retail analytics (Superstore dataset) with unsupervised customer behavioral clustering (K-Means ML model), delivering clear insights from raw transactions to high-impact corporate strategies.
             </p>
 
-            <div class="pt-2 flex flex-wrap gap-3">
-              <button onclick="switchTab('task1')" class="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-sm font-semibold shadow-lg shadow-brand-500/25 transition-all">
+            <div class="pt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+              <button onclick="switchTab('task1')" class="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-brand-500/25 transition-all">
                 <span>Explore Task 1: Sales Analysis</span>
-                <!-- SVG: Arrow Right -->
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </button>
 
-              <button onclick="switchTab('task2')" class="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all">
-                <span>Explore Task 2: Customer Segments</span>
-                <!-- SVG: Users -->
-                <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button onclick="switchTab('task2')" class="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-all">
+                <span>Explore Task 2: Customer Clusters</span>
+                <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -283,208 +316,180 @@
         </div>
 
         <!-- Global Combined Key Metrics -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-4">
           
           <!-- Metric 1: Total Sales -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-cyan-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Gross Sales</span>
-              <!-- SVG: Dollar Sign -->
-              <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-cyan-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Gross Sales</span>
+              <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="1" x2="12" y2="23"/>
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">$2.30M</div>
-            <p class="text-[11px] text-emerald-400 flex items-center mt-1">
-              <!-- SVG: Trending Up -->
-              <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                <polyline points="17 6 23 6 23 12"/>
-              </svg>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">$2.30M</div>
+            <p class="text-[10px] sm:text-[11px] text-emerald-400 flex items-center mt-1 truncate">
               +51% from 2014 to 2017
             </p>
           </div>
 
           <!-- Metric 2: Net Profit -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Net Profit</span>
-              <!-- SVG: Trend Up -->
-              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-emerald-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Net Profit</span>
+              <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 7 13.5 15.5 8.5 10.5 2 17"/>
                 <polyline points="16 7 22 7 22 13"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">$286.4K</div>
-            <p class="text-[11px] text-slate-400 mt-1">12.47% Global Margin</p>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">$286.4K</div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 mt-1 truncate">12.47% Global Margin</p>
           </div>
 
           <!-- Metric 3: Total Transactions -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-brand-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Orders Analyzed</span>
-              <!-- SVG: Shopping Bag -->
-              <svg class="w-4 h-4 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-brand-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Orders Analyzed</span>
+              <svg class="w-3.5 h-3.5 text-brand-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">9,994</div>
-            <p class="text-[11px] text-slate-400 mt-1">5,009 Unique Orders</p>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">9,994</div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 mt-1 truncate">5,009 Unique Orders</p>
           </div>
 
           <!-- Metric 4: Clustered Customers -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-purple-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Customer Profiles</span>
-              <!-- SVG: Users -->
-              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-purple-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Customer Profiles</span>
+              <svg class="w-3.5 h-3.5 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">200</div>
-            <p class="text-[11px] text-slate-400 mt-1">100% Scaled Completeness</p>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">200</div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 mt-1 truncate">StandardScaled Data</p>
           </div>
 
           <!-- Metric 5: Optimal Clusters -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-amber-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">ML Segments</span>
-              <!-- SVG: Target -->
-              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-amber-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">ML Segments</span>
+              <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <circle cx="12" cy="12" r="6"/>
-                <circle cx="12" cy="12" r="2"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">6 Personas</div>
-            <p class="text-[11px] text-amber-400 mt-1">Evaluated by Silhouette</p>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">6 Personas</div>
+            <p class="text-[10px] sm:text-[11px] text-amber-400 mt-1 truncate">Silhouette Evaluated</p>
           </div>
 
           <!-- Metric 6: Margin Risk Warning -->
-          <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 border-l-4 border-l-rose-500">
-            <div class="flex items-center justify-between text-slate-400 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Discount Cliff</span>
-              <!-- SVG: Alert Triangle -->
-              <svg class="w-4 h-4 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card glass-card-hover rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-l-4 border-l-rose-500 min-w-0">
+            <div class="flex items-center justify-between text-slate-400 mb-1 sm:mb-2">
+              <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate">Discount Cliff</span>
+              <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
             </div>
-            <div class="text-xl sm:text-2xl font-bold font-mono text-white">&ge; 30%</div>
-            <p class="text-[11px] text-rose-400 mt-1">Triggers Net Deficit</p>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">&ge; 30%</div>
+            <p class="text-[10px] sm:text-[11px] text-rose-400 mt-1 truncate">Triggers Net Deficit</p>
           </div>
 
         </div>
 
         <!-- Dual Pipeline Architecture Comparison -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           <!-- Task 1 Engine Card -->
-          <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-5 border border-slate-800 hover:border-emerald-500/40 transition-all">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <!-- SVG: Trending Bar -->
-                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-5 sm:p-7 space-y-4 border border-slate-800 hover:border-emerald-500/40 transition-all min-w-0">
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="flex items-center space-x-3 min-w-0">
+                <div class="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="20" x2="18" y2="10"/>
                     <line x1="12" y1="20" x2="12" y2="4"/>
                     <line x1="6" y1="20" x2="6" y2="14"/>
                   </svg>
                 </div>
-                <div>
-                  <h3 class="text-lg font-bold text-white">Task 1: Sales & Profitability Diagnostic</h3>
-                  <p class="text-xs text-slate-400">Descriptive &amp; Diagnostic Retail Analytics</p>
+                <div class="min-w-0">
+                  <h3 class="text-base sm:text-lg font-bold text-white truncate">Task 1: Sales Diagnostic</h3>
+                  <p class="text-[11px] sm:text-xs text-slate-400 truncate">Superstore Retail Analytics</p>
                 </div>
               </div>
-              <span class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Superstore EDA</span>
+              <span class="px-2 py-0.5 text-[10px] sm:text-xs font-mono font-medium rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 shrink-0">EDA</span>
             </div>
 
-            <p class="text-slate-300 text-sm leading-relaxed">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
               Analyzes historical retail sales from 2014 to 2017 across 3 product categories, 17 sub-categories, and 4 geographic regions. Isolates high-growth channels, seasonal buying behaviors, and reveals structural pricing destruction caused by uncontrolled discounting.
             </p>
 
-            <div class="space-y-2.5 pt-2 border-t border-slate-800">
-              <div class="flex items-center justify-between text-xs text-slate-300">
-                <span class="text-slate-400">Top Growth Category:</span>
-                <span class="font-semibold text-emerald-400">Technology ($836K Sales, $145K Profit)</span>
+            <div class="space-y-2 pt-2 border-t border-slate-800 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Top Category:</span>
+                <span class="font-semibold text-emerald-400 truncate ml-2">Technology ($145K Profit)</span>
               </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center justify-between">
                 <span class="text-slate-400">Critical Anomaly:</span>
-                <span class="font-semibold text-rose-400">Tables Sub-category (-$17.7K Loss)</span>
+                <span class="font-semibold text-rose-400 truncate ml-2">Tables (-$17.7K Loss)</span>
               </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
-                <span class="text-slate-400">Regional Champion:</span>
-                <span class="font-semibold text-cyan-400">West Region (14.94% Profit Margin)</span>
-              </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
-                <span class="text-slate-400">Key Risk Driver:</span>
-                <span class="font-semibold text-amber-400">Loss transactions averaged 48.09% discount</span>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Regional Leader:</span>
+                <span class="font-semibold text-cyan-400 truncate ml-2">West (14.94% Margin)</span>
               </div>
             </div>
 
-            <button onclick="switchTab('task1')" class="w-full mt-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-semibold border border-slate-700/80 flex items-center justify-center space-x-2 transition-all">
+            <button onclick="switchTab('task1')" class="w-full mt-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-semibold border border-slate-700/80 flex items-center justify-center space-x-2 transition-all">
               <span>View Full Task 1 Dashboard</span>
-              <!-- SVG: Chevron Right -->
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
           </div>
 
           <!-- Task 2 Engine Card -->
-          <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-5 border border-slate-800 hover:border-purple-500/40 transition-all">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                  <!-- SVG: Network / Cluster -->
-                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-5 sm:p-7 space-y-4 border border-slate-800 hover:border-purple-500/40 transition-all min-w-0">
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="flex items-center space-x-3 min-w-0">
+                <div class="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="18" cy="5" r="3"/>
                     <circle cx="6" cy="12" r="3"/>
                     <circle cx="18" cy="19" r="3"/>
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                   </svg>
                 </div>
-                <div>
-                  <h3 class="text-lg font-bold text-white">Task 2: Customer Behavioral Segmentation</h3>
-                  <p class="text-xs text-slate-400">Unsupervised Machine Learning &amp; Personas</p>
+                <div class="min-w-0">
+                  <h3 class="text-base sm:text-lg font-bold text-white truncate">Task 2: Customer Clustering</h3>
+                  <p class="text-[11px] sm:text-xs text-slate-400 truncate">Unsupervised K-Means Machine Learning</p>
                 </div>
               </div>
-              <span class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30">K-Means ML</span>
+              <span class="px-2 py-0.5 text-[10px] sm:text-xs font-mono font-medium rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30 shrink-0">ML</span>
             </div>
 
-            <p class="text-slate-300 text-sm leading-relaxed">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
               Applies unsupervised K-Means clustering on the Mall Customer dataset using standardized features (Age, Income, Spending Score). Rigorously validates optimal cluster separation via the Elbow Method (WCSS) and Silhouette Score analysis to replace generic mass marketing.
             </p>
 
-            <div class="space-y-2.5 pt-2 border-t border-slate-800">
-              <div class="flex items-center justify-between text-xs text-slate-300">
+            <div class="space-y-2 pt-2 border-t border-slate-800 text-xs">
+              <div class="flex items-center justify-between">
                 <span class="text-slate-400">High-Value Target:</span>
-                <span class="font-semibold text-emerald-400">Cluster 3: Champions ($86.5K Inc, 82.1 Spend)</span>
+                <span class="font-semibold text-emerald-400 truncate ml-2">Cluster 3: Champions ($86.5K Inc)</span>
               </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center justify-between">
                 <span class="text-slate-400">Untapped Opportunity:</span>
-                <span class="font-semibold text-purple-400">Cluster 2: High Income, Low Spend (33 Users)</span>
+                <span class="font-semibold text-purple-400 truncate ml-2">Cluster 2: Frugal Affluence (33)</span>
               </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
-                <span class="text-slate-400">Stability Metric:</span>
-                <span class="font-semibold text-cyan-400">Optimal Silhouette Score at K=6</span>
-              </div>
-              <div class="flex items-center justify-between text-xs text-slate-300">
-                <span class="text-slate-400">Interactive Feature:</span>
-                <span class="font-semibold text-amber-400">Real-Time What-If Customer Predictor</span>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Evaluation:</span>
+                <span class="font-semibold text-cyan-400 truncate ml-2">Optimal Silhouette at K=6</span>
               </div>
             </div>
 
-            <button onclick="switchTab('task2')" class="w-full mt-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-400 text-xs sm:text-sm font-semibold border border-slate-700/80 flex items-center justify-center space-x-2 transition-all">
+            <button onclick="switchTab('task2')" class="w-full mt-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-400 text-xs sm:text-sm font-semibold border border-slate-700/80 flex items-center justify-center space-x-2 transition-all">
               <span>View Full Task 2 Dashboard</span>
-              <!-- SVG: Chevron Right -->
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
@@ -493,74 +498,71 @@
         </div>
 
         <!-- End-to-End Pipeline Visualization Flow -->
-        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
-          <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="glass-card rounded-2xl p-5 sm:p-7 space-y-5 min-w-0">
+          <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                <!-- SVG: Git Branch / Workflow -->
-                <svg class="w-5 h-5 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <h3 class="text-base sm:text-lg font-bold text-white flex items-center space-x-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="6" y1="3" x2="6" y2="15"/>
                   <circle cx="18" cy="6" r="3"/>
                   <circle cx="6" cy="18" r="3"/>
-                  <path d="M18 9a9 9 0 0 1-9 9"/>
                 </svg>
-                <span>Full End-to-End Analytics Workflow Pipeline</span>
+                <span>End-to-End Analytics Workflow Pipeline</span>
               </h3>
-              <p class="text-xs text-slate-400">Both sub-tasks follow standard CRISP-DM methodology for maximum statistical reproducibility</p>
+              <p class="text-xs text-slate-400">Standard CRISP-DM methodology for maximum statistical reproducibility</p>
             </div>
             
             <button onclick="openModal('outputs_flowcharts/flowchart_pipeline.png', 'End-to-End Data Pipeline Architecture')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-slate-700 flex items-center space-x-1.5 transition-all">
-              <!-- SVG: Maximize -->
-              <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
               </svg>
-              <span>View Hi-Res Pipeline</span>
+              <span>View Full Pipeline</span>
             </button>
           </div>
 
           <!-- Flowchart Grid Cards -->
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 text-center">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 text-center">
             
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-mono text-xs font-bold">01</div>
-              <div class="text-xs font-semibold text-white">Data Ingestion</div>
-              <div class="text-[10px] text-slate-400">CSV parsing, schema validation, 0 nulls verified</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-mono text-xs font-bold">01</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">Ingestion</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">CSV validation</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-mono text-xs font-bold">02</div>
-              <div class="text-xs font-semibold text-white">Feature Eng.</div>
-              <div class="text-[10px] text-slate-400">Order Year/Month, Profit Margins, StandardScaling</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-mono text-xs font-bold">02</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">Features</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">Scaling &amp; Margins</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-mono text-xs font-bold">03</div>
-              <div class="text-xs font-semibold text-white">Exploratory EDA</div>
-              <div class="text-[10px] text-slate-400">Time-series, distributions, demographic skews</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-mono text-xs font-bold">03</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">EDA</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">Trends &amp; Skews</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-mono text-xs font-bold">04</div>
-              <div class="text-xs font-semibold text-white">Optimization</div>
-              <div class="text-[10px] text-slate-400">Elbow WCSS curve &amp; Silhouette separation score</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-mono text-xs font-bold">04</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">Elbow/Sil</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">WCSS &amp; Silhouette</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-pink-500/10 text-pink-400 flex items-center justify-center font-mono text-xs font-bold">05</div>
-              <div class="text-xs font-semibold text-white">Model Training</div>
-              <div class="text-[10px] text-slate-400">K-Means++ convergence, Euclidean centroid mapping</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-pink-500/10 text-pink-400 flex items-center justify-center font-mono text-xs font-bold">05</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">K-Means</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">Model training</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-mono text-xs font-bold">06</div>
-              <div class="text-xs font-semibold text-white">Profiling</div>
-              <div class="text-[10px] text-slate-400">Multi-dimensional persona labeling &amp; clustering</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-mono text-xs font-bold">06</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">Profiling</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">6 Persona labels</div>
             </div>
 
-            <div class="p-3.5 rounded-xl bg-surface-900 border border-slate-800 space-y-1.5">
-              <div class="w-7 h-7 mx-auto rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center font-mono text-xs font-bold">07</div>
-              <div class="text-xs font-semibold text-white">Action Matrix</div>
-              <div class="text-[10px] text-slate-400">Pricing ceilings, VIP marketing, inventory planning</div>
+            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1 col-span-2 sm:col-span-1">
+              <div class="w-6 h-6 mx-auto rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center font-mono text-xs font-bold">07</div>
+              <div class="text-[11px] sm:text-xs font-semibold text-white">Strategy</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">Action Matrix</div>
             </div>
 
           </div>
@@ -572,303 +574,252 @@
       <!-- =============================================================== -->
       <!-- TAB 2: TASK 1 SALES DATA ANALYSIS                                -->
       <!-- =============================================================== -->
-      <section id="tab-task1" class="tab-content hidden space-y-8">
+      <section id="tab-task1" class="tab-content hidden space-y-6 sm:space-y-8 min-w-0">
         
         <!-- Header Banner -->
-        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div class="space-y-2">
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
+          <div class="space-y-1.5 sm:space-y-2 min-w-0">
             <div class="flex items-center space-x-2">
               <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Task 1</span>
-              <span class="text-xs text-slate-400">Sample Superstore Retail Dataset</span>
+              <span class="text-xs text-slate-400 truncate">Sample Superstore Retail Dataset</span>
             </div>
-            <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Sales Performance &amp; Profitability Analytics</h2>
-            <p class="text-sm text-slate-300 max-w-2xl">
+            <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight break-words">Sales Performance &amp; Profitability Analytics</h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
               In-depth diagnostic analysis of 9,994 retail sales transactions from 2014 to 2017, examining category margins, geographic disparities, seasonality cycles, and discount profit-erosion.
             </p>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <a href="Task-1-Sales-Data-Analysis/notebooks/sales_data_analysis.ipynb" download class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center space-x-2 transition-all">
-              <!-- SVG: Download -->
-              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="flex flex-wrap gap-2.5 w-full md:w-auto shrink-0">
+            <a href="Task-1-Sales-Data-Analysis/notebooks/sales_data_analysis.ipynb" download class="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center space-x-2 transition-all">
+              <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span>Download Notebook</span>
+              <span>Download Task 1 Notebook</span>
             </a>
           </div>
         </div>
 
         <!-- Task 1 KPI Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-cyan-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Total Revenue</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">$2,297,200.86</div>
-            <div class="text-xs text-emerald-400 mt-2 flex items-center">
-              <!-- SVG: Trending Up -->
-              <svg class="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-              +51.2% Sales Surge (14-17)
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-cyan-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Total Revenue</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">$2,297,200.86</div>
+            <div class="text-[10px] sm:text-xs text-emerald-400 mt-1.5 flex items-center truncate">
+              +51.2% Growth (14-17)
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-emerald-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Total Net Profit</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">$286,397.02</div>
-            <div class="text-xs text-slate-400 mt-2">Overall Margin: 12.47%</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-emerald-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Total Net Profit</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">$286,397.02</div>
+            <div class="text-[10px] sm:text-xs text-slate-400 mt-1.5 truncate">12.47% Net Margin</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-purple-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Profitable Orders</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">8,123 (81.3%)</div>
-            <div class="text-xs text-emerald-400 mt-2">Generated $442.5K Profit</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-purple-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Profitable Orders</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">8,123 (81.3%)</div>
+            <div class="text-[10px] sm:text-xs text-emerald-400 mt-1.5 truncate">$442.5K Gained</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-rose-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Loss-Making Orders</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">1,871 (18.7%)</div>
-            <div class="text-xs text-rose-400 mt-2">Erased -$156.1K Profit</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-rose-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Loss-Making Orders</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">1,871 (18.7%)</div>
+            <div class="text-[10px] sm:text-xs text-rose-400 mt-1.5 truncate">-$156.1K Erased</div>
           </div>
 
         </div>
 
         <!-- Task 1 Interactive Charts Row 1 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           <!-- Chart 1: Yearly Trend -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">Yearly Sales &amp; Profit Growth (2014-2017)</h3>
-                <p class="text-xs text-slate-400">Robust 4-year upward momentum across all product divisions</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">Yearly Sales &amp; Profit Growth (2014-2017)</h3>
+                <p class="text-[11px] text-slate-400 truncate">Robust 4-year upward momentum across all product divisions</p>
               </div>
-              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/yearly_sales_trend.png', 'Yearly Sales Trend Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
-                <!-- SVG: Zoom -->
+              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/yearly_sales_trend.png', 'Yearly Sales Trend Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartYearlySales"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 text-xs text-slate-300">
-              <strong class="text-cyan-400">Insight:</strong> Sales grew from $484K in 2014 to $733K in 2017 (+51.4%), while profit escalated from $49.5K to $93.4K (+88.6%), confirming operational leverage.
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-slate-800 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-cyan-400">Insight:</strong> Sales grew from $484K in 2014 to $733K in 2017 (+51.4%), while profit escalated from $49.5K to $93.4K (+88.6%).
             </div>
           </div>
 
           <!-- Chart 2: Category Breakdown -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">Category Performance (Sales vs Profit)</h3>
-                <p class="text-xs text-slate-400">Technology, Office Supplies, and Furniture comparisons</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">Category Performance (Sales vs Profit)</h3>
+                <p class="text-[11px] text-slate-400 truncate">Technology, Office Supplies, and Furniture comparisons</p>
               </div>
-              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/category_performance.png', 'Category Performance Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
+              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/category_performance.png', 'Category Performance Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartCategoryPerf"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 text-xs text-slate-300">
-              <strong class="text-emerald-400">Insight:</strong> Technology leads in total profitability ($145.4K profit, 17.4% margin), whereas Furniture suffers severe margin erosion ($18.5K profit on $742K sales, 2.5% margin).
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-slate-800 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-emerald-400">Insight:</strong> Technology leads in profitability ($145.4K profit, 17.4% margin), whereas Furniture suffers severe margin erosion (2.5% margin).
             </div>
           </div>
 
         </div>
 
         <!-- Task 1 Interactive Charts Row 2: Sub-Category Profitability & Discount Cliff -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           <!-- Chart 3: Subcategory Profitability Drilldown -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">Sub-Category Profit vs Loss Champions</h3>
-                <p class="text-xs text-slate-400">Identifying profit powerhouses and value-eroding loss leaders</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">Sub-Category Profit vs Loss Leaders</h3>
+                <p class="text-[11px] text-slate-400 truncate">Identifying profit powerhouses and value-eroding loss leaders</p>
               </div>
-              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/subcategory_profitability.png', 'Sub-Category Profitability Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
+              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/subcategory_profitability.png', 'Sub-Category Profitability Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartSubcategory"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-rose-500/30 text-xs text-slate-300">
-              <strong class="text-rose-400">Critical Red Flag:</strong> The <strong>Tables</strong> sub-category generated $206.9K in sales yet suffered an aggregate net loss of <span class="text-rose-400 font-mono font-bold">-$17,725</span> due to deep discounting.
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-rose-500/30 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-rose-400">Critical Red Flag:</strong> The <strong>Tables</strong> sub-category generated $206.9K in sales yet suffered an aggregate net loss of <span class="text-rose-400 font-mono font-bold">-$17,725</span>.
             </div>
           </div>
 
           <!-- Chart 4: Discount vs Profit Margin Cliff -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">Discount Level vs. Profit Margin Destruction</h3>
-                <p class="text-xs text-slate-400">Empirical relationship between discount bracket and profitability</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">Discount Level vs. Profit Margin Destruction</h3>
+                <p class="text-[11px] text-slate-400 truncate">Empirical relationship between discount bracket and profitability</p>
               </div>
-              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/discount_vs_profit.png', 'Discount vs Profit Curve Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
+              <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/discount_vs_profit.png', 'Discount vs Profit Curve Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartDiscountCliff"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 text-xs text-slate-300">
-              <strong class="text-amber-400">The 30% Threshold:</strong> Discounts between 0-20% maintain positive margins (10-30%). Once discounts hit 30%+, the net profit margin plunges into negative territory (-30% to -80%).
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-slate-800 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-amber-400">The 30% Threshold:</strong> Discounts between 0-20% maintain positive margins (10-30%). Once discounts hit 30%+, profit margin plunges into negative territory (-30% to -80%).
             </div>
           </div>
 
         </div>
 
         <!-- Regional Performance & Seasonality Deep Dive -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           
           <!-- Regional Disparity Table -->
-          <div class="glass-card rounded-2xl p-6 lg:col-span-2 space-y-4">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <!-- SVG: Map Pin -->
-              <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-4 sm:p-6 lg:col-span-2 space-y-3 sm:space-y-4 min-w-0">
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-2">
+              <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                 <circle cx="12" cy="10" r="3"/>
               </svg>
               <span>Geographic Regional Profitability Variance</span>
             </h3>
-            <p class="text-xs text-slate-400">Substantial variance in margins across territories demands localized pricing policies</p>
             
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs sm:text-sm">
+            <div class="w-full overflow-x-auto min-w-0">
+              <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
                 <thead>
-                  <tr class="border-b border-slate-800 text-slate-400 font-semibold uppercase text-[11px]">
-                    <th class="py-2.5">Region</th>
-                    <th class="py-2.5">Gross Sales</th>
-                    <th class="py-2.5">Net Profit</th>
-                    <th class="py-2.5">Profit Margin</th>
-                    <th class="py-2.5">Status</th>
+                  <tr class="border-b border-slate-800 text-slate-400 font-semibold uppercase text-[10px] sm:text-[11px]">
+                    <th class="py-2.5 px-2">Region</th>
+                    <th class="py-2.5 px-2">Gross Sales</th>
+                    <th class="py-2.5 px-2">Net Profit</th>
+                    <th class="py-2.5 px-2">Margin</th>
+                    <th class="py-2.5 px-2">Status</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/60 font-mono">
+                <tbody class="divide-y divide-slate-800/60 font-mono text-xs">
                   <tr>
-                    <td class="py-3 font-sans font-bold text-white flex items-center space-x-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    <td class="py-2.5 px-2 font-sans font-bold text-white flex items-center space-x-1.5">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
                       <span>West</span>
                     </td>
-                    <td class="py-3 text-slate-200">$725,457.82</td>
-                    <td class="py-3 text-emerald-400 font-bold">$108,418.45</td>
-                    <td class="py-3 text-emerald-400 font-bold">14.94%</td>
-                    <td class="py-3 font-sans"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[11px]">Top Performer</span></td>
+                    <td class="py-2.5 px-2 text-slate-200">$725,457.82</td>
+                    <td class="py-2.5 px-2 text-emerald-400 font-bold">$108,418.45</td>
+                    <td class="py-2.5 px-2 text-emerald-400 font-bold">14.94%</td>
+                    <td class="py-2.5 px-2 font-sans"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">Leader</span></td>
                   </tr>
                   <tr>
-                    <td class="py-3 font-sans font-bold text-white flex items-center space-x-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <td class="py-2.5 px-2 font-sans font-bold text-white flex items-center space-x-1.5">
+                      <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
                       <span>East</span>
                     </td>
-                    <td class="py-3 text-slate-200">$678,781.24</td>
-                    <td class="py-3 text-cyan-400 font-bold">$91,522.78</td>
-                    <td class="py-3 text-cyan-400 font-bold">13.48%</td>
-                    <td class="py-3 font-sans"><span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[11px]">Strong Margin</span></td>
+                    <td class="py-2.5 px-2 text-slate-200">$678,781.24</td>
+                    <td class="py-2.5 px-2 text-cyan-400 font-bold">$91,522.78</td>
+                    <td class="py-2.5 px-2 text-cyan-400 font-bold">13.48%</td>
+                    <td class="py-2.5 px-2 font-sans"><span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px]">Strong</span></td>
                   </tr>
                   <tr>
-                    <td class="py-3 font-sans font-bold text-white flex items-center space-x-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                    <td class="py-2.5 px-2 font-sans font-bold text-white flex items-center space-x-1.5">
+                      <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
                       <span>South</span>
                     </td>
-                    <td class="py-3 text-slate-200">$391,721.91</td>
-                    <td class="py-3 text-amber-400 font-bold">$46,749.43</td>
-                    <td class="py-3 text-amber-400 font-bold">11.93%</td>
-                    <td class="py-3 font-sans"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[11px]">Moderate</span></td>
+                    <td class="py-2.5 px-2 text-slate-200">$391,721.91</td>
+                    <td class="py-2.5 px-2 text-amber-400 font-bold">$46,749.43</td>
+                    <td class="py-2.5 px-2 text-amber-400 font-bold">11.93%</td>
+                    <td class="py-2.5 px-2 font-sans"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px]">Moderate</span></td>
                   </tr>
                   <tr>
-                    <td class="py-3 font-sans font-bold text-white flex items-center space-x-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                    <td class="py-2.5 px-2 font-sans font-bold text-white flex items-center space-x-1.5">
+                      <span class="w-2 h-2 rounded-full bg-rose-400 shrink-0"></span>
                       <span>Central</span>
                     </td>
-                    <td class="py-3 text-slate-200">$501,239.89</td>
-                    <td class="py-3 text-rose-400 font-bold">$39,706.36</td>
-                    <td class="py-3 text-rose-400 font-bold">7.92%</td>
-                    <td class="py-3 font-sans"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[11px]">Margin Depressed</span></td>
+                    <td class="py-2.5 px-2 text-slate-200">$501,239.89</td>
+                    <td class="py-2.5 px-2 text-rose-400 font-bold">$39,706.36</td>
+                    <td class="py-2.5 px-2 text-rose-400 font-bold">7.92%</td>
+                    <td class="py-2.5 px-2 font-sans"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px]">Depressed</span></td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <p class="text-xs text-slate-400 pt-2">
-              The West region captures nearly double the margin of Central (14.94% vs 7.92%). Central's aggressive discounting in Binders and Furniture drags profitability down significantly.
+            <p class="text-[11px] text-slate-400 pt-1">
+              West captures nearly double the margin of Central (14.94% vs 7.92%) due to uncontrolled Central discounting in Binders and Furniture.
             </p>
           </div>
 
           <!-- Seasonality Card -->
-          <div class="glass-card rounded-2xl p-6 space-y-4">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <!-- SVG: Calendar -->
-              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-2">
+              <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
                 <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              <span>Seasonality Insights</span>
+              <span>Seasonality Cycles</span>
             </h3>
 
-            <div class="space-y-3 text-xs text-slate-300">
-              <div class="p-3 rounded-xl bg-surface-900 border border-slate-800">
+            <div class="space-y-2 text-xs text-slate-300">
+              <div class="p-2.5 rounded-xl bg-surface-900 border border-slate-800">
                 <span class="text-amber-400 font-bold">Q4 Surge (Nov &amp; Dec):</span>
-                <p class="text-slate-400 mt-1">Historically accounts for 30%+ of total annual volume due to corporate budget clearouts and holiday shopping.</p>
+                <p class="text-slate-400 text-[11px] mt-0.5">30%+ of total annual volume due to corporate budget clearouts.</p>
               </div>
 
-              <div class="p-3 rounded-xl bg-surface-900 border border-slate-800">
-                <span class="text-cyan-400 font-bold">Q1 Trough (Jan &amp; Feb):</span>
-                <p class="text-slate-400 mt-1">February is consistently the lowest sales month. Supply chains should schedule warehouse maintenance during this window.</p>
-              </div>
-
-              <div class="p-3 rounded-xl bg-surface-900 border border-slate-800">
-                <span class="text-purple-400 font-bold">Back-to-School (Sep):</span>
-                <p class="text-slate-400 mt-1">Second peak in Office Supplies and Technology shipments.</p>
+              <div class="p-2.5 rounded-xl bg-surface-900 border border-slate-800">
+                <span class="text-cyan-400 font-bold">Q1 Dip (Jan &amp; Feb):</span>
+                <p class="text-slate-400 text-[11px] mt-0.5">February is consistently the lowest sales month.</p>
               </div>
             </div>
 
             <button onclick="openModal('Task-1-Sales-Data-Analysis/outputs/sales_heatmap.png', 'Monthly Sales Heatmap Output')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-purple-300 border border-slate-700 transition-all">
-              View Monthly Sales Heatmap
+              View Monthly Heatmap
             </button>
           </div>
 
-        </div>
-
-        <!-- Task 1 Strategic Recommendations Box -->
-        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-4 border-l-4 border-l-brand-500">
-          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-            <!-- SVG: Lightbulb -->
-            <svg class="w-5 h-5 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
-              <path d="M9 18h6"/>
-              <path d="M10 22h4"/>
-            </svg>
-            <span>Task 1 Data-Driven Business Recommendations</span>
-          </h3>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="text-xs font-mono font-bold text-rose-400">01. DISCOUNT CEILING ENFORCEMENT</span>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Immediately institute automated guardrails in the ERP/CRM blocking sales reps from granting discounts above <strong>20%</strong> without VP approval. The data proves 30%+ discounts cause pure margin destruction.
-              </p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="text-xs font-mono font-bold text-amber-400">02. TABLES PRODUCT-LINE RESTRUCTURING</span>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Audit supplier manufacturing contracts and shipping freight costs for Tables. Re-price baseline items or eliminate standalone table sales in favor of bundle requirements with high-margin chairs/technology.
-              </p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="text-xs font-mono font-bold text-emerald-400">03. REGIONAL PLAYBOOK SHIFT</span>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Export West region's customer relationship model to Central. Transition Central sales incentives from top-line revenue volume to <strong>gross margin contribution</strong> to eliminate unprofitable discounting.
-              </p>
-            </div>
-
-          </div>
         </div>
 
       </section>
@@ -877,243 +828,238 @@
       <!-- =============================================================== -->
       <!-- TAB 3: TASK 2 CUSTOMER SEGMENTATION                              -->
       <!-- =============================================================== -->
-      <section id="tab-task2" class="tab-content hidden space-y-8">
+      <section id="tab-task2" class="tab-content hidden space-y-6 sm:space-y-8 min-w-0">
         
         <!-- Header Banner -->
-        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div class="space-y-2">
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 min-w-0">
+          <div class="space-y-1.5 sm:space-y-2 min-w-0">
             <div class="flex items-center space-x-2">
               <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">Task 2</span>
-              <span class="text-xs text-slate-400">Mall Customer Behavioral Clustering</span>
+              <span class="text-xs text-slate-400 truncate">Mall Customer Behavioral Clustering</span>
             </div>
-            <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">K-Means Machine Learning Customer Segmentation</h2>
-            <p class="text-sm text-slate-300 max-w-2xl">
+            <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight break-words">K-Means Machine Learning Customer Segmentation</h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
               Unsupervised machine learning model grouping 200 mall customers into distinct personas based on standardized Age, Annual Income, and Spending Score features, backed by mathematical cluster validation.
             </p>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <a href="Task-2-Customer-Segmentation/notebooks/customer_segmentation.ipynb" download class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center space-x-2 transition-all">
-              <!-- SVG: Download -->
-              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="flex flex-wrap gap-2.5 w-full md:w-auto shrink-0">
+            <a href="Task-2-Customer-Segmentation/notebooks/customer_segmentation.ipynb" download class="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center space-x-2 transition-all">
+              <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span>Download Notebook</span>
+              <span>Download Task 2 Notebook</span>
             </a>
           </div>
         </div>
 
         <!-- Task 2 Model Validation Metrics -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-purple-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Total Sample Size</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">200 Customers</div>
-            <div class="text-xs text-slate-400 mt-2">Zero Missing Values (100% clean)</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-purple-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Total Sample Size</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">200 Customers</div>
+            <div class="text-[10px] sm:text-xs text-slate-400 mt-1.5 truncate">Zero Missing Values</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-cyan-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Feature Scaler</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">StandardScaler</div>
-            <div class="text-xs text-cyan-400 mt-2">Zero Mean, Unit Variance</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-cyan-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Feature Scaler</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">StandardScaler</div>
+            <div class="text-[10px] sm:text-xs text-cyan-400 mt-1.5 truncate">Unit Variance Normalized</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-amber-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Elbow Criterion (WCSS)</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">K = 5 to 6</div>
-            <div class="text-xs text-amber-400 mt-2">Steepest inflection point</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-amber-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Elbow Criterion (WCSS)</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">K = 5 to 6</div>
+            <div class="text-[10px] sm:text-xs text-amber-400 mt-1.5 truncate">Optimal Inflection</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-emerald-500">
-            <span class="text-xs text-slate-400 uppercase font-semibold">Optimal Model Evaluated</span>
-            <div class="text-2xl font-bold font-mono text-white mt-1">6 Personas</div>
-            <div class="text-xs text-emerald-400 mt-2">Full 3D Separation</div>
+          <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-emerald-500 min-w-0">
+            <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Optimal Model Evaluated</span>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">6 Personas</div>
+            <div class="text-[10px] sm:text-xs text-emerald-400 mt-1.5 truncate">Full 3D Separation</div>
           </div>
 
         </div>
 
         <!-- ML Evaluation Visualizations: Elbow Curve & Silhouette Score -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           <!-- Chart: Elbow Method -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">The Elbow Method (Inertia / WCSS)</h3>
-                <p class="text-xs text-slate-400">Within-Cluster Sum of Squares across K = 2 to 10</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">The Elbow Method (Inertia / WCSS)</h3>
+                <p class="text-[11px] text-slate-400 truncate">Within-Cluster Sum of Squares across K = 2 to 10</p>
               </div>
-              <button onclick="openModal('Task-2-Customer-Segmentation/outputs/elbow_method.png', 'Elbow Method Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
+              <button onclick="openModal('Task-2-Customer-Segmentation/outputs/elbow_method.png', 'Elbow Method Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartElbow"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 text-xs text-slate-300">
-              <strong class="text-cyan-400">Mathematical Proof:</strong> WCSS drops precipitously from K=2 to K=5, before the rate of decrease slows down markedly at K=5 and K=6, indicating diminishing returns for higher K values.
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-slate-800 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-cyan-400">Mathematical Proof:</strong> WCSS drops sharply up to K=5 and K=6, indicating the best mathematical tradeoff between compactness and complexity.
             </div>
           </div>
 
           <!-- Chart: Silhouette Score -->
-          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-white">Silhouette Score Evaluation</h3>
-                <p class="text-xs text-slate-400">Measuring intra-cluster cohesion vs inter-cluster separation</p>
+          <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-bold text-white truncate">Silhouette Score Evaluation</h3>
+                <p class="text-[11px] text-slate-400 truncate">Measuring intra-cluster cohesion vs inter-cluster separation</p>
               </div>
-              <button onclick="openModal('Task-2-Customer-Segmentation/outputs/silhouette_score.png', 'Silhouette Score Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white" title="Expand View">
+              <button onclick="openModal('Task-2-Customer-Segmentation/outputs/silhouette_score.png', 'Silhouette Score Output')" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white shrink-0" title="Expand View">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
             </div>
-            <div class="h-64 sm:h-72">
+            <div class="chart-wrapper h-60 sm:h-72">
               <canvas id="chartSilhouette"></canvas>
             </div>
-            <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 text-xs text-slate-300">
-              <strong class="text-purple-400">Mathematical Proof:</strong> Silhouette score peaks at K=6 on the scaled 3D feature set (Age, Income, Spending), confirming robust cluster distinctness without artificial overfitting.
+            <div class="p-2.5 sm:p-3 rounded-xl bg-surface-900 border border-slate-800 text-[11px] sm:text-xs text-slate-300">
+              <strong class="text-purple-400">Mathematical Proof:</strong> Silhouette score peaks at K=6 on the scaled 3D feature set (Age, Income, Spending), confirming robust cluster separation.
             </div>
           </div>
 
         </div>
 
         <!-- 6 Detailed Customer Personas Grid -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold text-white flex items-center space-x-2">
-              <!-- SVG: Grid -->
-              <svg class="w-5 h-5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
+        <div class="space-y-3 sm:space-y-4 min-w-0">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h3 class="text-base sm:text-xl font-bold text-white flex items-center space-x-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
-              <span>The 6 Algorithmic Customer Personas (3D Segmentation)</span>
+              <span>The 6 Algorithmic Customer Personas</span>
             </h3>
             <button onclick="openModal('Task-2-Customer-Segmentation/outputs/customer_clusters.png', 'Customer Clusters Scatter Output')" class="text-xs text-purple-400 hover:text-purple-300 font-medium">
-              View Original 2D/3D Scatter Plots &rarr;
+              View Original Scatter Plots &rarr;
             </button>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             
             <!-- Persona 0 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-slate-400 space-y-3">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-slate-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-slate-400 uppercase">Cluster 0 &bull; 45 Customers (22.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-mono">Mature Spenders</span>
+                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase">Cluster 0 &bull; 45 Users (22.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[9px] font-mono">Mature</span>
               </div>
-              <h4 class="text-base font-bold text-white">Mature Moderate Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">49.4</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$44.4K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">42.2</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Mature Moderate Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">49.4</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$44.4K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">42.2</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Middle-aged, stable income, conservative spenders. Value convenience, customer support, and reliability.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Middle-aged, stable income, conservative spenders. Value convenience and reliability.
               </p>
-              <div class="text-[11px] text-brand-300 font-medium bg-brand-500/10 p-2 rounded-lg border border-brand-500/20">
-                <strong>Strategy:</strong> Retention programs, seasonal newsletter discounts, warranty upgrades.
+              <div class="text-[10px] text-brand-300 font-medium bg-brand-500/10 p-2 rounded-lg border border-brand-500/20">
+                <strong>Strategy:</strong> Retention programs, seasonal newsletter deals, warranty upgrades.
               </div>
             </div>
 
             <!-- Persona 1 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-400 space-y-3">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-blue-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-blue-400 uppercase">Cluster 1 &bull; 39 Customers (19.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 text-[10px] font-mono">Young Active</span>
+                <span class="text-[10px] font-mono font-bold text-blue-400 uppercase">Cluster 1 &bull; 39 Users (19.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 text-[9px] font-mono">Young</span>
               </div>
-              <h4 class="text-base font-bold text-white">Young Moderate Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">25.3</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$40.0K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">60.3</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Young Moderate Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">25.3</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$40.0K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">60.3</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Young adults with entry-level earnings but elevated discretionary spending appetite for trends and tech.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Young adults with entry earnings but strong discretionary spending appetite for trends.
               </p>
-              <div class="text-[11px] text-blue-300 font-medium bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
-                <strong>Strategy:</strong> Digital social media marketing, influencer endorsements, student/entry bundles.
+              <div class="text-[10px] text-blue-300 font-medium bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
+                <strong>Strategy:</strong> Digital marketing, influencer endorsements, entry tech bundles.
               </div>
             </div>
 
             <!-- Persona 2 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-400 space-y-3">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-amber-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-amber-400 uppercase">Cluster 2 &bull; 33 Customers (16.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] font-mono">Untapped</span>
+                <span class="text-[10px] font-mono font-bold text-amber-400 uppercase">Cluster 2 &bull; 33 Users (16.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[9px] font-mono">Untapped</span>
               </div>
-              <h4 class="text-base font-bold text-white">High-Income Low Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">41.7</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$88.2K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">17.3</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">High-Income Low Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">41.7</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$88.2K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">17.3</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Affluent but frugal or disengaged. Great untapped purchasing power that isn't converted by generic sales.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Affluent but frugal or disengaged. Great untapped purchasing power.
               </p>
-              <div class="text-[11px] text-amber-300 font-medium bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
-                <strong>Strategy:</strong> Exclusive VIP previews, quality-focused messaging, bespoke concierge promotions.
+              <div class="text-[10px] text-amber-300 font-medium bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
+                <strong>Strategy:</strong> Exclusive VIP previews, quality messaging, concierge promotions.
               </div>
             </div>
 
             <!-- Persona 3 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-400 space-y-3 glow-emerald">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-400 space-y-2.5 glow-emerald min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-emerald-400 uppercase">Cluster 3 &bull; 39 Customers (19.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">★ Champions</span>
+                <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase">Cluster 3 &bull; 39 Users (19.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono font-bold">★ Champions</span>
               </div>
-              <h4 class="text-base font-bold text-white">High-Income High Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">32.7</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$86.5K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">82.1</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">High-Income High Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">32.7</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$86.5K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">82.1</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                The crown jewel demographic. Young, highly compensated, and enthusiastic spenders across premium goods.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Crown jewel demographic. Young, highly compensated, enthusiastic spenders.
               </p>
-              <div class="text-[11px] text-emerald-300 font-medium bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
-                <strong>Strategy:</strong> VIP concierge, luxury flagship offerings, white-glove loyalty tiers. DO NOT DISCOUNT.
+              <div class="text-[10px] text-emerald-300 font-medium bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                <strong>Strategy:</strong> VIP concierge, flagship offerings, premium loyalty. DO NOT DISCOUNT.
               </div>
             </div>
 
             <!-- Persona 4 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-pink-400 space-y-3">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-pink-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-pink-400 uppercase">Cluster 4 &bull; 23 Customers (11.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 text-[10px] font-mono">Enthusiasts</span>
+                <span class="text-[10px] font-mono font-bold text-pink-400 uppercase">Cluster 4 &bull; 23 Users (11.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 text-[9px] font-mono">Enthusiasts</span>
               </div>
-              <h4 class="text-base font-bold text-white">Low-Income High Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">25.3</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$25.7K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">79.4</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Low-Income High Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">25.3</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$25.7K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">79.4</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Young aspirational buyers with modest earnings but strong passion for fashion, gadgets, and lifestyle.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Young aspirational buyers with modest earnings but strong lifestyle spending appetite.
               </p>
-              <div class="text-[11px] text-pink-300 font-medium bg-pink-500/10 p-2 rounded-lg border border-pink-500/20">
-                <strong>Strategy:</strong> Flexible BNPL financing, limited-drop capsule collections, flash weekend deals.
+              <div class="text-[10px] text-pink-300 font-medium bg-pink-500/10 p-2 rounded-lg border border-pink-500/20">
+                <strong>Strategy:</strong> Flexible BNPL financing, limited-drop capsule deals, flash sales.
               </div>
             </div>
 
             <!-- Persona 5 -->
-            <div class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-400 space-y-3">
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-rose-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-mono font-bold text-rose-400 uppercase">Cluster 5 &bull; 21 Customers (10.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 text-[10px] font-mono">Frugal</span>
+                <span class="text-[10px] font-mono font-bold text-rose-400 uppercase">Cluster 5 &bull; 21 Users (10.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 text-[9px] font-mono">Frugal</span>
               </div>
-              <h4 class="text-base font-bold text-white">Low-Income Low Spenders</h4>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono py-2 bg-surface-900 rounded-xl">
-                <div><span class="text-slate-400 block text-[10px]">Avg Age</span><strong class="text-white">45.2</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Inc</span><strong class="text-white">$26.3K</strong></div>
-                <div><span class="text-slate-400 block text-[10px]">Avg Spend</span><strong class="text-white">20.9</strong></div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Low-Income Low Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">45.2</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$26.3K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">20.9</strong></div>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Price-sensitive shoppers purchasing strictly essential commodities. Highly responsive to extreme coupons.
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Price-sensitive shoppers purchasing strictly essential commodities.
               </p>
-              <div class="text-[11px] text-rose-300 font-medium bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
-                <strong>Strategy:</strong> Low-cost digital promotions, bulk essential bundles, clearance outlet channels.
+              <div class="text-[10px] text-rose-300 font-medium bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
+                <strong>Strategy:</strong> Digital promotions, essential bundles, clearance outlet channels.
               </div>
             </div>
 
@@ -1121,62 +1067,52 @@
         </div>
 
         <!-- Interactive Customer Cluster Visualizer (Scatter) -->
-        <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+        <div class="glass-card rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 min-w-0">
           <div class="flex items-center justify-between flex-wrap gap-2">
-            <div>
-              <h3 class="text-base font-bold text-white">Interactive 2D Cluster Scatter Plot</h3>
-              <p class="text-xs text-slate-400">Annual Income ($k) vs. Spending Score (1-100) across 200 Mall Customers</p>
+            <div class="min-w-0">
+              <h3 class="text-sm sm:text-base font-bold text-white truncate">Interactive 2D Cluster Scatter Plot</h3>
+              <p class="text-[11px] text-slate-400 truncate">Annual Income ($k) vs. Spending Score across 200 Mall Customers</p>
             </div>
-            <div class="flex items-center space-x-2 text-xs">
-              <span class="flex items-center space-x-1 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span>Champions</span></span>
-              <span class="flex items-center space-x-1 text-amber-400"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span>Untapped</span></span>
-              <span class="flex items-center space-x-1 text-pink-400"><span class="w-2.5 h-2.5 rounded-full bg-pink-400"></span><span>Young Spenders</span></span>
-              <span class="flex items-center space-x-1 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span>Moderate</span></span>
+            <div class="flex items-center flex-wrap gap-2 text-[10px] sm:text-xs">
+              <span class="flex items-center space-x-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Champions</span></span>
+              <span class="flex items-center space-x-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Untapped</span></span>
+              <span class="flex items-center space-x-1 text-pink-400"><span class="w-2 h-2 rounded-full bg-pink-400"></span><span>Young Spenders</span></span>
             </div>
           </div>
-          <div class="h-72 sm:h-80">
+          <div class="chart-wrapper h-64 sm:h-80">
             <canvas id="chartScatterClusters"></canvas>
           </div>
         </div>
 
         <!-- INTERACTIVE LIVE WHAT-IF SIMULATOR -->
-        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-2 border-purple-500/30 glow-purple">
+        <div class="glass-card rounded-2xl p-4 sm:p-7 space-y-4 sm:space-y-6 border-2 border-purple-500/30 glow-purple min-w-0">
           <div class="flex items-center space-x-3">
-            <div class="p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40">
-              <!-- SVG: Sliders / Simulator -->
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="p-2 sm:p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 shrink-0">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="4" y1="21" x2="4" y2="14"/>
-                <line x1="4" y1="10" x2="4" y2="3"/>
                 <line x1="12" y1="21" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12" y2="3"/>
                 <line x1="20" y1="21" x2="20" y2="16"/>
-                <line x1="20" y1="12" x2="20" y2="3"/>
-                <line x1="1" y1="14" x2="7" y2="14"/>
-                <line x1="9" y1="8" x2="15" y2="8"/>
-                <line x1="17" y1="16" x2="23" y2="16"/>
               </svg>
             </div>
-            <div>
-              <h3 class="text-xl font-bold text-white">Interactive What-If Customer Segment Classifier</h3>
-              <p class="text-xs text-slate-400">Adjust the sliders below to run real-time Euclidean distance classification against K-Means centroids</p>
+            <div class="min-w-0">
+              <h3 class="text-base sm:text-xl font-bold text-white truncate">What-If Customer Segment Classifier</h3>
+              <p class="text-xs text-slate-400 truncate">Real-time Euclidean distance classification against K-Means centroids</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             
             <!-- Controls Panel -->
-            <div class="lg:col-span-2 space-y-5 bg-surface-900/80 p-5 rounded-2xl border border-slate-800">
+            <div class="lg:col-span-2 space-y-4 sm:space-y-5 bg-surface-900/80 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-800 min-w-0">
               
               <!-- Slider 1: Age -->
-              <div class="space-y-2">
+              <div class="space-y-1.5">
                 <div class="flex justify-between text-xs font-semibold">
-                  <span class="text-slate-300 flex items-center space-x-1.5">
-                    <span>Customer Age</span>
-                  </span>
-                  <span id="val-age" class="font-mono text-purple-400 text-sm">32 Years</span>
+                  <span class="text-slate-300">Customer Age</span>
+                  <span id="val-age" class="font-mono text-purple-400 text-xs sm:text-sm">32 Years</span>
                 </div>
                 <input type="range" id="input-age" min="18" max="70" value="32" 
-                       class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500" 
+                       class="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500 touch-pan-x" 
                        oninput="updateSimulator()" />
                 <div class="flex justify-between text-[10px] text-slate-500 font-mono">
                   <span>18 yrs</span>
@@ -1186,15 +1122,13 @@
               </div>
 
               <!-- Slider 2: Income -->
-              <div class="space-y-2">
+              <div class="space-y-1.5">
                 <div class="flex justify-between text-xs font-semibold">
-                  <span class="text-slate-300 flex items-center space-x-1.5">
-                    <span>Annual Income (k$)</span>
-                  </span>
-                  <span id="val-income" class="font-mono text-emerald-400 text-sm">$85,000</span>
+                  <span class="text-slate-300">Annual Income</span>
+                  <span id="val-income" class="font-mono text-emerald-400 text-xs sm:text-sm">$85,000</span>
                 </div>
                 <input type="range" id="input-income" min="15" max="140" value="85" 
-                       class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" 
+                       class="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500 touch-pan-x" 
                        oninput="updateSimulator()" />
                 <div class="flex justify-between text-[10px] text-slate-500 font-mono">
                   <span>$15K</span>
@@ -1204,15 +1138,13 @@
               </div>
 
               <!-- Slider 3: Spending Score -->
-              <div class="space-y-2">
+              <div class="space-y-1.5">
                 <div class="flex justify-between text-xs font-semibold">
-                  <span class="text-slate-300 flex items-center space-x-1.5">
-                    <span>Spending Score (1-100)</span>
-                  </span>
-                  <span id="val-spending" class="font-mono text-cyan-400 text-sm">80 / 100</span>
+                  <span class="text-slate-300">Spending Score</span>
+                  <span id="val-spending" class="font-mono text-cyan-400 text-xs sm:text-sm">80 / 100</span>
                 </div>
                 <input type="range" id="input-spending" min="1" max="100" value="80" 
-                       class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                       class="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 touch-pan-x" 
                        oninput="updateSimulator()" />
                 <div class="flex justify-between text-[10px] text-slate-500 font-mono">
                   <span>1 (Frugal)</span>
@@ -1224,23 +1156,23 @@
             </div>
 
             <!-- Real-Time Classification Output Box -->
-            <div id="sim-result-card" class="glass-card rounded-2xl p-5 border-2 border-emerald-500/40 flex flex-col justify-between space-y-4">
+            <div id="sim-result-card" class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-2 border-emerald-500/40 flex flex-col justify-between space-y-3 min-w-0">
               <div>
                 <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-400">Classified Segment</span>
-                <h4 id="sim-cluster-title" class="text-lg font-extrabold text-emerald-400 mt-1">High-Income High Spenders</h4>
+                <h4 id="sim-cluster-title" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 break-words">High-Income High Spenders</h4>
                 <div class="inline-block mt-1">
                   <span id="sim-cluster-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     Cluster 3 &bull; Champions Tier
                   </span>
                 </div>
                 
-                <p id="sim-cluster-desc" class="text-xs text-slate-300 mt-3 leading-relaxed">
-                  Young, highly affluent, and exceptionally high spending score. Primary driver of top-tier retail luxury profitability.
+                <p id="sim-cluster-desc" class="text-xs text-slate-300 mt-2.5 leading-relaxed">
+                  Young, highly affluent, and exceptionally high spending score. Primary driver of luxury profitability.
                 </p>
               </div>
 
-              <div class="pt-3 border-t border-slate-800">
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Tailored Marketing Action:</span>
+              <div class="pt-2.5 border-t border-slate-800">
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Tailored Action:</span>
                 <p id="sim-cluster-action" class="text-xs font-medium text-white leading-snug">
                   VIP concierge, premium early-access product drops, personalized white-glove recommendations. Do not discount.
                 </p>
@@ -1256,135 +1188,91 @@
       <!-- =============================================================== -->
       <!-- TAB 4: STRATEGIC CROSS-TASK SYNERGY                              -->
       <!-- =============================================================== -->
-      <section id="tab-synergy" class="tab-content hidden space-y-8">
+      <section id="tab-synergy" class="tab-content hidden space-y-6 sm:space-y-8 min-w-0">
         
         <!-- Header Banner -->
-        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-3">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium">
-            <!-- SVG: Sparkles -->
-            <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-800 space-y-2 min-w-0">
+          <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium">
+            <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
             </svg>
             <span>Cross-Task Synergy &amp; Executive Synthesis</span>
           </div>
-          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Bridging Sales Analytics &amp; Machine Learning Personas</h2>
-          <p class="text-sm text-slate-300 max-w-3xl">
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight break-words">Bridging Sales Analytics &amp; Machine Learning Personas</h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-3xl">
             How connecting retail category profitability (Task 1) with customer behavioral clusters (Task 2) eliminates wasted marketing spend, terminates value-destroying discounts, and drives sustainable profit growth.
           </p>
         </div>
 
         <!-- Strategic Matrix Mapping Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           
-          <div class="glass-card rounded-2xl p-6 space-y-4 border-l-4 border-l-emerald-500">
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                <!-- SVG: Check -->
-                <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Synergy 1: Zero-Discount Luxury Tech Channel</span>
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 border-l-4 border-l-emerald-500 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-1.5 truncate">
+                <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span class="truncate">Synergy 1: Zero-Discount Luxury Tech</span>
               </h3>
-              <span class="text-xs font-mono text-emerald-400 font-semibold">Margin Multiplier</span>
+              <span class="text-[10px] font-mono text-emerald-400 font-semibold shrink-0">Margin</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Task 1 revealed that <strong>Technology</strong> generates our highest margin ($145.4K profit, 17.4% margin) with flagship copiers and phones. 
-              Simultaneously, Task 2 isolated <strong>Cluster 3 (High-Income High Spenders)</strong> who possess high income ($86.5K) and an 82+ spending score.
+              Task 1 revealed that <strong>Technology</strong> generates our highest margin ($145.4K profit, 17.4% margin). 
+              Task 2 isolated <strong>Cluster 3 (Champions)</strong> who possess high income ($86.5K) and an 82+ spending score.
             </p>
-            <div class="p-3 bg-surface-900 rounded-xl border border-slate-800 text-xs text-emerald-300">
-              <strong>Execution:</strong> Exclusively market brand-new premium technology lines to Cluster 3 at full MSRP. Stop sending blanket discount flyers that erode tech margins unnecessarily.
+            <div class="p-2.5 bg-surface-900 rounded-xl border border-slate-800 text-[11px] text-emerald-300">
+              <strong>Execution:</strong> Exclusively market brand-new premium technology lines to Cluster 3 at full MSRP. Stop sending blanket discount flyers.
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 space-y-4 border-l-4 border-l-cyan-500">
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                <!-- SVG: User Check -->
-                <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
-                <span>Synergy 2: Unlocking Frugal Affluence (Cluster 2)</span>
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 border-l-4 border-l-cyan-500 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-1.5 truncate">
+                <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span class="truncate">Synergy 2: Unlocking Frugal Affluence</span>
               </h3>
-              <span class="text-xs font-mono text-cyan-400 font-semibold">Volume Activator</span>
+              <span class="text-[10px] font-mono text-cyan-400 font-semibold shrink-0">Volume</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Task 2 uncovered <strong>Cluster 2 (33 customers)</strong> who earn $88K+ annually but have a subterranean spending score of 17.3. 
-              Task 1 shows that Office Supplies has consistent utility and high volume.
+              Task 2 uncovered <strong>Cluster 2 (33 customers)</strong> earning $88K+ with a spending score of 17.3. 
+              Task 1 shows Office Supplies and Appliances have consistent utility.
             </p>
-            <div class="p-3 bg-surface-900 rounded-xl border border-slate-800 text-xs text-cyan-300">
-              <strong>Execution:</strong> Engage this segment with quality, durability, and business efficiency narratives (Appliances, High-end Storage) rather than cheap mass discounts, converting their substantial cash reserves.
+            <div class="p-2.5 bg-surface-900 rounded-xl border border-slate-800 text-[11px] text-cyan-300">
+              <strong>Execution:</strong> Engage this segment with durability and business efficiency narratives rather than cheap discounts.
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 space-y-4 border-l-4 border-l-rose-500">
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                <!-- SVG: Shield Alert -->
-                <svg class="w-4 h-4 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>Synergy 3: Capping the Tables Discount Hemorrhage</span>
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 border-l-4 border-l-rose-500 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-1.5 truncate">
+                <svg class="w-4 h-4 text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span class="truncate">Synergy 3: Capping Tables Losses</span>
               </h3>
-              <span class="text-xs font-mono text-rose-400 font-semibold">Loss Prevention</span>
+              <span class="text-[10px] font-mono text-rose-400 font-semibold shrink-0">Protection</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Task 1 proved that the Tables sub-category lost <strong>-$17.7K</strong>, driven by severe 40-70% discounting. 
-              Offering deep table discounts to low-income clusters (Cluster 4 &amp; 5) creates freight deficit.
+              Task 1 proved Tables lost <strong>-$17.7K</strong> driven by 40-70% discounting. Offering deep table discounts to low-income clusters creates freight deficits.
             </p>
-            <div class="p-3 bg-surface-900 rounded-xl border border-slate-800 text-xs text-rose-300">
-              <strong>Execution:</strong> Ban standalone table discounting. Pair tables as high-margin home office suites targeted at Cluster 0 and Cluster 3 with bundled assembly fees.
+            <div class="p-2.5 bg-surface-900 rounded-xl border border-slate-800 text-[11px] text-rose-300">
+              <strong>Execution:</strong> Ban standalone table discounting. Pair tables as high-margin home office suites targeted at Cluster 0 and 3.
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 space-y-4 border-l-4 border-l-amber-500">
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                <!-- SVG: Calendar Check -->
-                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
-                <span>Synergy 4: Synchronized Q4 Holiday Campaign</span>
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 border-l-4 border-l-amber-500 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-1.5 truncate">
+                <svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+                <span class="truncate">Synergy 4: Synchronized Q4 Ramp-Up</span>
               </h3>
-              <span class="text-xs font-mono text-amber-400 font-semibold">Revenue Acceleration</span>
+              <span class="text-[10px] font-mono text-amber-400 font-semibold shrink-0">Holiday</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Task 1 exhibits massive November &amp; December demand spikes. 
-              Deploying segmented marketing schedules enables early inventory clearance without panic discounts in mid-December.
+              Task 1 exhibits massive Nov &amp; Dec demand spikes. Deploying segmented marketing schedules enables early inventory clearance without panic discounts.
             </p>
-            <div class="p-3 bg-surface-900 rounded-xl border border-slate-800 text-xs text-amber-300">
-              <strong>Execution:</strong> Launch VIP early access for Cluster 3 in late October. Release limited fashion capsule promotions for Cluster 1 &amp; 4 in mid-November. Reserve clearance deals for Cluster 5 in late December.
+            <div class="p-2.5 bg-surface-900 rounded-xl border border-slate-800 text-[11px] text-amber-300">
+              <strong>Execution:</strong> Launch VIP early access for Cluster 3 in October. Reserve clearance deals for Cluster 5 in late December.
             </div>
           </div>
 
-        </div>
-
-        <!-- Complete 4-Step Executive Playbook -->
-        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-5 border border-slate-800">
-          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-            <!-- SVG: Target -->
-            <svg class="w-5 h-5 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-            </svg>
-            <span>The 90-Day Implementation Action Plan</span>
-          </h3>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="font-mono text-cyan-400 font-bold">PHASE 1 (Days 1-15)</span>
-              <p class="text-slate-300 font-semibold">Discount Guardrails</p>
-              <p class="text-slate-400">Lock point-of-sale discounting at 20% max. Audit Tables SKU pricing and supplier shipping contracts.</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="font-mono text-emerald-400 font-bold">PHASE 2 (Days 16-45)</span>
-              <p class="text-slate-300 font-semibold">CRM Segmentation</p>
-              <p class="text-slate-400">Ingest K-Means clusters into marketing CRM. Tag customers as Champions, Untapped, or Budget to eliminate blind blasts.</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="font-mono text-purple-400 font-bold">PHASE 3 (Days 46-75)</span>
-              <p class="text-slate-300 font-semibold">Regional Pilot</p>
-              <p class="text-slate-400">Deploy West region's high-margin sales incentive model into Central branches, shifting compensation from gross sales to margin.</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-surface-900 border border-slate-800 space-y-2">
-              <span class="font-mono text-amber-400 font-bold">PHASE 4 (Days 76-90)</span>
-              <p class="text-slate-300 font-semibold">Q4 Campaign Rollout</p>
-              <p class="text-slate-400">Coordinate inventory staging for Technology and Office Supplies ahead of November demand surge.</p>
-            </div>
-          </div>
         </div>
 
       </section>
@@ -1393,100 +1281,75 @@
       <!-- =============================================================== -->
       <!-- TAB 5: REPOSITORY DOCUMENTATION & ASSETS                        -->
       <!-- =============================================================== -->
-      <section id="tab-docs" class="tab-content hidden space-y-8">
+      <section id="tab-docs" class="tab-content hidden space-y-6 sm:space-y-8 min-w-0">
         
         <!-- Header Banner -->
-        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-3">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium">
-            <!-- SVG: File Code -->
-            <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-800 space-y-2 min-w-0">
+          <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium">
+            <svg class="w-3.5 h-3.5 text-blue-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
-              <polyline points="10 13 8 15 10 17"/>
-              <polyline points="14 13 16 15 14 17"/>
             </svg>
-            <span>Complete Technical Specifications &amp; Project Repository</span>
+            <span>Complete Technical Specifications</span>
           </div>
-          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Project Documentation &amp; Artifact Downloads</h2>
-          <p class="text-sm text-slate-300 max-w-2xl">
-            Everything needed to review, clone, inspect, or present this project. Download the Jupyter notebooks, explore dataset schemas, or view executive slide decks.
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight break-words">Project Datasets &amp; Jupyter Notebooks</h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
+            Direct access to clean transactional CSV data, fully executed Jupyter Notebooks, and project source files.
           </p>
         </div>
 
-        <!-- Artifact Download Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Clean 2-Card Artifact Grid (Presentations removed) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-5xl">
           
-          <div class="glass-card rounded-2xl p-6 space-y-4 border border-slate-800">
-            <div class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center border border-orange-500/20">
-              <!-- SVG: Presentation -->
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <h3 class="text-base font-bold text-white">PowerPoint Slide Decks</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">
-              Complete executive presentations generated for project reviews and stakeholder briefings.
-            </p>
-            <div class="space-y-2 pt-2">
-              <a href="Mini_Project_Presentation.pptx" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Mini Project Presentation</span>
-                <!-- SVG: Download -->
-                <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              </a>
-              <a href="Cinematic_Story_3D_Morph_Presentation.pptx" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Cinematic 3D Presentation</span>
-                <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              </a>
-            </div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-6 space-y-4 border border-slate-800">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-              <!-- SVG: Database -->
+          <!-- Raw Datasets Card -->
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 border border-slate-800 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 shrink-0">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <ellipse cx="12" cy="5" rx="9" ry="3"/>
                 <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
                 <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
               </svg>
             </div>
-            <h3 class="text-base font-bold text-white">Raw Datasets</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">
-              Direct access to clean transactional CSV data utilized in Task 1 and Task 2.
-            </p>
+            <div>
+              <h3 class="text-base font-bold text-white">Raw Datasets (.csv)</h3>
+              <p class="text-xs text-slate-400 mt-1">
+                Direct access to clean transactional CSV data utilized in Task 1 and Task 2.
+              </p>
+            </div>
             <div class="space-y-2 pt-2">
-              <a href="Task-1-Sales-Data-Analysis/data/Sample%20-%20Superstore.csv" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Sample - Superstore.csv (9,994 rows)</span>
-                <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <a href="Task-1-Sales-Data-Analysis/data/Sample%20-%20Superstore.csv" download class="w-full py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
+                <span class="truncate mr-2">Sample - Superstore.csv (9,994 rows)</span>
+                <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </a>
-              <a href="Task-2-Customer-Segmentation/data/Mall_Customers.csv" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Mall_Customers.csv (200 rows)</span>
-                <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <a href="Task-2-Customer-Segmentation/data/Mall_Customers.csv" download class="w-full py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
+                <span class="truncate mr-2">Mall_Customers.csv (200 rows)</span>
+                <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </a>
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 space-y-4 border border-slate-800">
-            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
-              <!-- SVG: Code -->
+          <!-- Jupyter Notebooks Card -->
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 border border-slate-800 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20 shrink-0">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="16 18 22 12 16 6"/>
                 <polyline points="8 6 2 12 8 18"/>
               </svg>
             </div>
-            <h3 class="text-base font-bold text-white">Jupyter Notebooks</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">
-              Step-by-step reproducible analysis with cell outputs, statistical tests, and plots.
-            </p>
+            <div>
+              <h3 class="text-base font-bold text-white">Jupyter Notebooks (.ipynb)</h3>
+              <p class="text-xs text-slate-400 mt-1">
+                Complete reproducible code cells with outputs, mathematical checks, and plots.
+              </p>
+            </div>
             <div class="space-y-2 pt-2">
-              <a href="Task-1-Sales-Data-Analysis/notebooks/sales_data_analysis.ipynb" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Task 1 Notebook (.ipynb)</span>
-                <svg class="w-3.5 h-3.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <a href="Task-1-Sales-Data-Analysis/notebooks/sales_data_analysis.ipynb" download class="w-full py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
+                <span class="truncate mr-2">sales_data_analysis.ipynb</span>
+                <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </a>
-              <a href="Task-2-Customer-Segmentation/notebooks/customer_segmentation.ipynb" download class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
-                <span>Task 2 Notebook (.ipynb)</span>
-                <svg class="w-3.5 h-3.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <a href="Task-2-Customer-Segmentation/notebooks/customer_segmentation.ipynb" download class="w-full py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-between transition-all">
+                <span class="truncate mr-2">customer_segmentation.ipynb</span>
+                <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </a>
             </div>
           </div>
@@ -1494,50 +1357,42 @@
         </div>
 
         <!-- Tech Stack & Author Profile -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 max-w-5xl">
           
-          <div class="glass-card rounded-2xl p-6 space-y-4">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <!-- SVG: Layers -->
-              <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 min-w-0">
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-2">
+              <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 2 7 12 12 22 7 12 2"/>
                 <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
               </svg>
               <span>Technologies &amp; Libraries</span>
             </h3>
             
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Python 3.11</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Pandas 2.x</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">NumPy 1.26</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Scikit-Learn</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Matplotlib</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Seaborn</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Chart.js 4.4</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Tailwind CSS</div>
-              <div class="p-2.5 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">GitHub Pages</div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono">
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Python 3.11</div>
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Pandas 2.x</div>
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">NumPy 1.26</div>
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Scikit-Learn</div>
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Matplotlib</div>
+              <div class="p-2 rounded-lg bg-surface-900 border border-slate-800 text-slate-300">Chart.js 4.4</div>
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 space-y-4">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <!-- SVG: User -->
-              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3 min-w-0">
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center space-x-2">
+              <svg class="w-4 h-4 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
               </svg>
-              <span>Author Information</span>
+              <span>Author Profile</span>
             </h3>
             
-            <div class="space-y-2 text-xs text-slate-300">
+            <div class="space-y-1.5 text-xs text-slate-300">
               <p><strong class="text-white text-sm">Prasoon Pathak</strong></p>
-              <p class="text-slate-400">Data Analytics Intern &bull; InternAlpha Internship Program</p>
-              <p class="text-slate-400">Computer Science &amp; Engineering</p>
-              <div class="pt-2 flex items-center space-x-3">
+              <p class="text-slate-400">Data Analytics Intern &bull; InternAlpha Program</p>
+              <div class="pt-1 flex items-center space-x-3">
                 <a href="https://github.com/pathakpk7" target="_blank" class="text-cyan-400 hover:text-cyan-300 flex items-center space-x-1">
-                  <!-- SVG: Link -->
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                   <span>github.com/pathakpk7</span>
                 </a>
               </div>
@@ -1551,26 +1406,25 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="mt-auto border-t border-slate-800/80 bg-surface-950/80 py-6 text-center text-xs text-slate-500">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <footer class="mt-auto border-t border-slate-800/80 bg-surface-950/80 py-5 text-center text-xs text-slate-500 px-4">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
         <p>&copy; 2026 Prasoon Pathak &bull; InternAlpha Data Analytics Internship Portfolio</p>
-        <p class="text-slate-400">Hosted live via GitHub Pages &bull; Pure SVG Vector UI</p>
+        <p class="text-slate-400">Pure SVG Vector UI &bull; Fully Responsive</p>
       </div>
     </footer>
 
   </div>
 
   <!-- IMAGE LIGHTBOX MODAL -->
-  <div id="image-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6" onclick="closeModal()">
+  <div id="image-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6" onclick="closeModal()">
     <div class="relative max-w-5xl w-full bg-surface-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between px-5 py-3 border-b border-slate-800 bg-surface-950">
-        <h4 id="modal-title" class="text-sm font-semibold text-white">Visual Artifact</h4>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <!-- SVG: X / Close -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-surface-950">
+        <h4 id="modal-title" class="text-xs sm:text-sm font-semibold text-white truncate">Visual Artifact</h4>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="p-3 bg-surface-950 flex items-center justify-center max-h-[80vh] overflow-auto">
+      <div class="p-2 sm:p-3 bg-surface-950 flex items-center justify-center max-h-[80vh] overflow-auto">
         <img id="modal-img" src="" alt="Artifact View" class="max-h-[75vh] w-auto object-contain rounded-lg shadow-lg" />
       </div>
     </div>
@@ -1593,14 +1447,9 @@
         btn.classList.remove('active');
       });
 
-      // Remove active color from mobile nav buttons
-      const mobileNavs = ['overview', 'task1', 'task2', 'synergy', 'docs'];
-      mobileNavs.forEach(id => {
-        const mBtn = document.getElementById('m-nav-' + id);
-        if (mBtn) {
-          mBtn.classList.remove('bg-brand-500/20', 'text-white', 'border', 'border-brand-500/30');
-          mBtn.classList.add('text-slate-300');
-        }
+      // Remove active class from mobile nav buttons
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
       });
 
       // Show targeted tab
@@ -1618,15 +1467,16 @@
       // Highlight active mobile button
       const activeMBtn = document.getElementById('m-nav-' + tabId);
       if (activeMBtn) {
-        activeMBtn.classList.add('bg-brand-500/20', 'text-white', 'border', 'border-brand-500/30');
-        activeMBtn.classList.remove('text-slate-300');
+        activeMBtn.classList.add('active');
       }
 
       // Update URL hash without jumping
       history.replaceState(null, null, '#' + tabId);
 
-      // Trigger Chart.js recalculation on view change
-      window.dispatchEvent(new Event('resize'));
+      // Force Chart.js charts to recalculate and adapt immediately
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 50);
     }
 
     // Modal Lightbox
@@ -1657,14 +1507,16 @@
         switchTab('overview');
       }
 
-      // Global Chart.js defaults for dark theme
+      // Global Chart.js defaults for dark theme & responsive auto-fit
       Chart.defaults.color = '#94a3b8';
       Chart.defaults.font.family = 'Plus Jakarta Sans, sans-serif';
-      Chart.defaults.font.size = 11;
+      Chart.defaults.font.size = window.innerWidth < 640 ? 10 : 11;
       Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
       Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.15)';
       Chart.defaults.plugins.tooltip.borderWidth = 1;
-      Chart.defaults.plugins.tooltip.padding = 10;
+      Chart.defaults.plugins.tooltip.padding = 8;
+      Chart.defaults.responsive = true;
+      Chart.defaults.maintainAspectRatio = false;
 
       // 1. Yearly Sales & Profit Chart (Task 1)
       const ctxYearly = document.getElementById('chartYearlySales');
@@ -1680,7 +1532,7 @@
                 backgroundColor: 'rgba(56, 169, 247, 0.65)',
                 borderColor: '#38a9f7',
                 borderWidth: 1.5,
-                borderRadius: 6,
+                borderRadius: 4,
                 yAxisID: 'y'
               },
               {
@@ -1689,17 +1541,15 @@
                 type: 'line',
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 3,
+                borderWidth: 2.5,
                 pointBackgroundColor: '#10b981',
-                pointRadius: 5,
+                pointRadius: 4,
                 tension: 0.3,
                 yAxisID: 'y1'
               }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
               y: {
@@ -1725,7 +1575,7 @@
         new Chart(ctxCat, {
           type: 'bar',
           data: {
-            labels: ['Technology', 'Office Supplies', 'Furniture'],
+            labels: ['Tech', 'Office', 'Furniture'],
             datasets: [
               {
                 label: 'Sales ($)',
@@ -1733,7 +1583,7 @@
                 backgroundColor: 'rgba(6, 182, 212, 0.65)',
                 borderColor: '#06b6d4',
                 borderWidth: 1.5,
-                borderRadius: 6
+                borderRadius: 4
               },
               {
                 label: 'Profit ($)',
@@ -1741,13 +1591,11 @@
                 backgroundColor: 'rgba(16, 185, 129, 0.75)',
                 borderColor: '#10b981',
                 borderWidth: 1.5,
-                borderRadius: 6
+                borderRadius: 4
               }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
               y: {
@@ -1765,7 +1613,7 @@
         new Chart(ctxSubcat, {
           type: 'bar',
           data: {
-            labels: ['Copiers', 'Phones', 'Accessories', 'Paper', 'Binders', 'Chairs', 'Storage', 'Supplies', 'Bookcases', 'Tables'],
+            labels: ['Copiers', 'Phones', 'Access.', 'Paper', 'Binders', 'Chairs', 'Storage', 'Supplies', 'Bookcases', 'Tables'],
             datasets: [{
               label: 'Net Profit ($)',
               data: [55617, 44515, 41936, 34053, 30221, 26590, 21278, -1189, -3472, -17725],
@@ -1773,13 +1621,11 @@
                 '#10b981', '#10b981', '#10b981', '#10b981', '#10b981', 
                 '#10b981', '#10b981', '#f59e0b', '#f43f5e', '#ef4444'
               ],
-              borderRadius: 4
+              borderRadius: 3
             }]
           },
           options: {
             indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: {
                 grid: { color: 'rgba(255, 255, 255, 0.05)' },
@@ -1799,20 +1645,18 @@
           data: {
             labels: ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%'],
             datasets: [{
-              label: 'Average Profit Margin (%)',
+              label: 'Profit Margin (%)',
               data: [30.2, 22.4, 11.8, -12.5, -34.8, -48.2, -56.1, -68.4, -84.2],
               borderColor: '#f43f5e',
               backgroundColor: 'rgba(244, 63, 94, 0.15)',
               fill: true,
               tension: 0.35,
               pointBackgroundColor: '#f43f5e',
-              pointRadius: 5,
-              borderWidth: 2.5
+              pointRadius: 4,
+              borderWidth: 2
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
               y: {
@@ -1838,15 +1682,13 @@
               backgroundColor: 'rgba(168, 85, 247, 0.12)',
               fill: true,
               pointBackgroundColor: ['#a855f7', '#a855f7', '#a855f7', '#f59e0b', '#a855f7', '#a855f7', '#a855f7', '#a855f7', '#a855f7'],
-              pointRadius: [4, 4, 4, 8, 4, 4, 4, 4, 4],
+              pointRadius: [3, 3, 3, 7, 3, 3, 3, 3, 3],
               pointBorderColor: '#fff',
-              borderWidth: 2.5,
+              borderWidth: 2,
               tension: 0.3
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
               y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } }
@@ -1870,12 +1712,10 @@
                 'rgba(168, 85, 247, 0.6)', '#10b981', 'rgba(148, 163, 184, 0.3)',
                 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)'
               ],
-              borderRadius: 5
+              borderRadius: 4
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
               y: {
@@ -1891,7 +1731,6 @@
       // 7. Scatter Clusters Visualization (Task 2)
       const ctxScatter = document.getElementById('chartScatterClusters');
       if (ctxScatter) {
-        // Generate representative sample dots for 5/6 clusters
         const genCluster = (cx, cy, count, rx, ry) => {
           const arr = [];
           for (let i = 0; i < count; i++) {
@@ -1908,47 +1747,39 @@
           data: {
             datasets: [
               {
-                label: 'Champions (High Inc, High Spend)',
+                label: 'Champions',
                 data: genCluster(86, 82, 39, 26, 26),
                 backgroundColor: '#10b981',
-                pointRadius: 5
+                pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Untapped (High Inc, Low Spend)',
+                label: 'Untapped',
                 data: genCluster(88, 17, 33, 28, 22),
                 backgroundColor: '#f59e0b',
-                pointRadius: 5
+                pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Careless (Low Inc, High Spend)',
+                label: 'Careless',
                 data: genCluster(25, 79, 23, 16, 26),
                 backgroundColor: '#ec4899',
-                pointRadius: 5
+                pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Frugal (Low Inc, Low Spend)',
-                data: genCluster(26, 20, 21, 16, 24),
-                backgroundColor: '#f43f5e',
-                pointRadius: 5
-              },
-              {
-                label: 'Moderate Spenders (Mid Inc, Mid Spend)',
+                label: 'Moderate',
                 data: genCluster(55, 49, 84, 28, 30),
                 backgroundColor: '#38a9f7',
-                pointRadius: 5
+                pointRadius: window.innerWidth < 640 ? 3.5 : 5
               }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
               x: {
                 title: { display: true, text: 'Annual Income ($k)', color: '#94a3b8' },
                 grid: { color: 'rgba(255, 255, 255, 0.05)' }
               },
               y: {
-                title: { display: true, text: 'Spending Score (1-100)', color: '#94a3b8' },
+                title: { display: true, text: 'Spending Score', color: '#94a3b8' },
                 grid: { color: 'rgba(255, 255, 255, 0.05)' }
               }
             }
@@ -1963,13 +1794,12 @@
     // -------------------------------------------------------------
     // INTERACTIVE WHAT-IF SIMULATOR ENGINE
     // -------------------------------------------------------------
-    // Centroids in unscaled feature space (Age, Income, Spending)
     const clusterCentroids = [
-      { id: 0, name: "Mature Moderate Spenders", badge: "Cluster 0 • Mature Spenders", age: 49.4, inc: 44.4, spd: 42.2, color: "#94a3b8", desc: "Middle-aged customer with balanced earnings and conservative, utility-focused shopping habits.", action: "Retention loyalty programs, warranty upgrades, quality assurance communication." },
+      { id: 0, name: "Mature Moderate Spenders", badge: "Cluster 0 • Mature Spenders", age: 49.4, inc: 44.4, spd: 42.2, color: "#94a3b8", desc: "Middle-aged customer with balanced earnings and utility-focused shopping habits.", action: "Retention loyalty programs, warranty upgrades, quality assurance communication." },
       { id: 1, name: "Young Moderate Spenders", badge: "Cluster 1 • Young Active", age: 25.3, inc: 40.0, spd: 60.3, color: "#38a9f7", desc: "Young professional with steady career beginnings and healthy lifestyle spending interest.", action: "Digital marketing, social media campaigns, student/entry-level tech bundles." },
-      { id: 2, name: "High-Income Low Spenders", badge: "Cluster 2 • Untapped Opportunity", age: 41.7, inc: 88.2, spd: 17.3, color: "#f59e0b", desc: "Highly affluent customer who shops infrequently or prioritizes utility. Huge untapped wealth reserves.", action: "Exclusive VIP concierge, durability and prestige narratives, bespoke corporate showcases." },
-      { id: 3, name: "High-Income High Spenders", badge: "Cluster 3 • Champions Tier", age: 32.7, inc: 86.5, spd: 82.1, color: "#10b981", desc: "Crown jewel demographic. Young, highly compensated, with frequent luxury purchasing behavior.", action: "Premium product drops, VIP concierge early access, white-glove treatment. NEVER discount." },
-      { id: 4, name: "Low-Income High Spenders", badge: "Cluster 4 • Young Enthusiasts", age: 25.3, inc: 25.7, spd: 79.4, color: "#ec4899", desc: "Young, trend-conscious buyer with modest income but high impulse/fashion spending appetite.", action: "Flexible BNPL installment financing, limited-drop capsule collections, flash weekend deals." },
+      { id: 2, name: "High-Income Low Spenders", badge: "Cluster 2 • Untapped Opportunity", age: 41.7, inc: 88.2, spd: 17.3, color: "#f59e0b", desc: "Highly affluent customer who shops infrequently. Huge untapped wealth reserves.", action: "Exclusive VIP concierge, durability and prestige narratives, bespoke corporate showcases." },
+      { id: 3, name: "High-Income High Spenders", badge: "Cluster 3 • Champions Tier", age: 32.7, inc: 86.5, spd: 82.1, color: "#10b981", desc: "Crown jewel demographic. Young, highly compensated, frequent luxury purchasing behavior.", action: "Premium product drops, VIP concierge early access, white-glove treatment. NEVER discount." },
+      { id: 4, name: "Low-Income High Spenders", badge: "Cluster 4 • Young Enthusiasts", age: 25.3, inc: 25.7, spd: 79.4, color: "#ec4899", desc: "Young trend-conscious buyer with modest income but high impulse/fashion spending appetite.", action: "Flexible BNPL installment financing, limited-drop capsule collections, flash weekend deals." },
       { id: 5, name: "Low-Income Low Spenders", badge: "Cluster 5 • Frugal Essentials", age: 45.2, inc: 26.3, spd: 20.9, color: "#f43f5e", desc: "Price-conscious consumer focused on staple necessities and strict monthly household budgets.", action: "Cost-effective digital coupons, multi-pack grocery/supply discounts, clearance promotions." }
     ];
 
@@ -1978,12 +1808,10 @@
       const inc = parseFloat(document.getElementById('input-income').value);
       const spd = parseFloat(document.getElementById('input-spending').value);
 
-      document.getElementById('val-age').textContent = age + ' Years';
-      document.getElementById('val-income').textContent = '$' + inc + ',000';
-      document.getElementById('val-spending').textContent = spd + ' / 100';
+      document.getElementById('val-age').textContent = age + ' Yrs';
+      document.getElementById('val-income').textContent = '$' + inc + 'K';
+      document.getElementById('val-spending').textContent = spd + '/100';
 
-      // Find closest centroid (normalized Euclidean distance)
-      // Normalizing factors approx std devs: Age ~ 14, Inc ~ 26, Spd ~ 26
       let minDistance = Infinity;
       let matchedCluster = clusterCentroids[3];
 

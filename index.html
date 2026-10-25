@@ -381,7 +381,7 @@
                 <circle cx="12" cy="12" r="6"/>
               </svg>
             </div>
-            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">6 Personas</div>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white truncate">5 Personas</div>
             <p class="text-[10px] sm:text-[11px] text-amber-400 mt-1 truncate">Silhouette Evaluated</p>
           </div>
 
@@ -483,7 +483,7 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-slate-400">Evaluation:</span>
-                <span class="font-semibold text-cyan-400 truncate ml-2">Optimal Silhouette at K=6</span>
+                <span class="font-semibold text-cyan-400 truncate ml-2">Optimal K=5 Silhouette Validation</span>
               </div>
             </div>
 
@@ -556,7 +556,7 @@
             <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1">
               <div class="w-6 h-6 mx-auto rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-mono text-xs font-bold">06</div>
               <div class="text-[11px] sm:text-xs font-semibold text-white">Profiling</div>
-              <div class="text-[9px] sm:text-[10px] text-slate-400">6 Persona labels</div>
+              <div class="text-[9px] sm:text-[10px] text-slate-400">5 Persona labels</div>
             </div>
 
             <div class="p-3 rounded-xl bg-surface-900 border border-slate-800 space-y-1 col-span-2 sm:col-span-1">
@@ -878,8 +878,8 @@
 
           <div class="glass-card rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border-t-4 border-t-emerald-500 min-w-0">
             <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block truncate">Optimal Model Evaluated</span>
-            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">6 Personas</div>
-            <div class="text-[10px] sm:text-xs text-emerald-400 mt-1.5 truncate">Full 3D Separation</div>
+            <div class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 truncate">5 Personas</div>
+            <div class="text-[10px] sm:text-xs text-emerald-400 mt-1.5 truncate">Optimal K=5 Clustering</div>
           </div>
 
         </div>
@@ -934,132 +934,112 @@
               <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
-              <span>The 6 Algorithmic Customer Personas</span>
+              <span>The 5 Real-Dataset Customer Segments</span>
             </h3>
             <button onclick="openModal('Task-2-Customer-Segmentation/outputs/customer_clusters.png', 'Customer Clusters Scatter Output')" class="text-xs text-purple-400 hover:text-purple-300 font-medium">
               View Original Scatter Plots &rarr;
             </button>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
             
-            <!-- Persona 0 -->
-            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-slate-400 space-y-2.5 min-w-0">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase">Cluster 0 &bull; 45 Users (22.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[9px] font-mono">Mature</span>
-              </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">Mature Moderate Spenders</h4>
-              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
-                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">49.4</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$44.4K</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">42.2</strong></div>
-              </div>
-              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Middle-aged, stable income, conservative spenders. Value convenience and reliability.
-              </p>
-              <div class="text-[10px] text-brand-300 font-medium bg-brand-500/10 p-2 rounded-lg border border-brand-500/20">
-                <strong>Strategy:</strong> Retention programs, seasonal newsletter deals, warranty upgrades.
-              </div>
-            </div>
-
-            <!-- Persona 1 -->
-            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-blue-400 space-y-2.5 min-w-0">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-blue-400 uppercase">Cluster 1 &bull; 39 Users (19.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 text-[9px] font-mono">Young</span>
-              </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">Young Moderate Spenders</h4>
-              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
-                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">25.3</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$40.0K</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">60.3</strong></div>
-              </div>
-              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Young adults with entry earnings but strong discretionary spending appetite for trends.
-              </p>
-              <div class="text-[10px] text-blue-300 font-medium bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
-                <strong>Strategy:</strong> Digital marketing, influencer endorsements, entry tech bundles.
-              </div>
-            </div>
-
-            <!-- Persona 2 -->
-            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-amber-400 space-y-2.5 min-w-0">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-amber-400 uppercase">Cluster 2 &bull; 33 Users (16.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[9px] font-mono">Untapped</span>
-              </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">High-Income Low Spenders</h4>
-              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
-                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">41.7</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$88.2K</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">17.3</strong></div>
-              </div>
-              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Affluent but frugal or disengaged. Great untapped purchasing power.
-              </p>
-              <div class="text-[10px] text-amber-300 font-medium bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
-                <strong>Strategy:</strong> Exclusive VIP previews, quality messaging, concierge promotions.
-              </div>
-            </div>
-
-            <!-- Persona 3 -->
+            <!-- Persona 1: Champions -->
             <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-400 space-y-2.5 glow-emerald min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase">Cluster 3 &bull; 39 Users (19.5%)</span>
+                <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase">39 Users (19.5%)</span>
                 <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono font-bold">★ Champions</span>
               </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">High-Income High Spenders</h4>
+              <h4 class="text-sm sm:text-base font-bold text-white">Champions</h4>
               <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
                 <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">32.7</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$86.5K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Income</span><strong class="text-white">$86.5K</strong></div>
                 <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">82.1</strong></div>
               </div>
               <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Crown jewel demographic. Young, highly compensated, enthusiastic spenders.
+                High-income, high-spending crown jewel demographic. Primary driver of luxury profitability.
               </p>
               <div class="text-[10px] text-emerald-300 font-medium bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
-                <strong>Strategy:</strong> VIP concierge, flagship offerings, premium loyalty. DO NOT DISCOUNT.
+                <strong>Strategy:</strong> VIP concierge, exclusive early-access drops, white-glove loyalty. Never discount.
               </div>
             </div>
 
-            <!-- Persona 4 -->
+            <!-- Persona 2: Untapped -->
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-amber-400 space-y-2.5 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-amber-400 uppercase">35 Users (17.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[9px] font-mono">Untapped</span>
+              </div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Untapped</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">41.1</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Income</span><strong class="text-white">$88.2K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">17.1</strong></div>
+              </div>
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                High-income, low-spending affluent customers. Great purchasing power that resists generic sales.
+              </p>
+              <div class="text-[10px] text-amber-300 font-medium bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
+                <strong>Strategy:</strong> Bespoke corporate showcases, durability/prestige messaging, targeted re-engagement.
+              </div>
+            </div>
+
+            <!-- Persona 3: Young Spenders -->
             <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-pink-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-pink-400 uppercase">Cluster 4 &bull; 23 Users (11.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 text-[9px] font-mono">Enthusiasts</span>
+                <span class="text-[10px] font-mono font-bold text-pink-400 uppercase">22 Users (11.0%)</span>
+                <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 text-[9px] font-mono">Young Trend</span>
               </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">Low-Income High Spenders</h4>
+              <h4 class="text-sm sm:text-base font-bold text-white">Young Spenders</h4>
               <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
                 <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">25.3</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$25.7K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Income</span><strong class="text-white">$25.7K</strong></div>
                 <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">79.4</strong></div>
               </div>
               <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Young aspirational buyers with modest earnings but strong lifestyle spending appetite.
+                Low-income, high-spending young lifestyle buyers with strong appetite for fashion, tech, and trends.
               </p>
               <div class="text-[10px] text-pink-300 font-medium bg-pink-500/10 p-2 rounded-lg border border-pink-500/20">
-                <strong>Strategy:</strong> Flexible BNPL financing, limited-drop capsule deals, flash sales.
+                <strong>Strategy:</strong> Flexible BNPL financing, limited-drop capsule collections, flash weekend deals.
               </div>
             </div>
 
-            <!-- Persona 5 -->
+            <!-- Persona 4: Sensible Spenders -->
             <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-rose-400 space-y-2.5 min-w-0">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-mono font-bold text-rose-400 uppercase">Cluster 5 &bull; 21 Users (10.5%)</span>
-                <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 text-[9px] font-mono">Frugal</span>
+                <span class="text-[10px] font-mono font-bold text-rose-400 uppercase">23 Users (11.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 text-[9px] font-mono">Sensible</span>
               </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">Low-Income Low Spenders</h4>
+              <h4 class="text-sm sm:text-base font-bold text-white">Sensible Spenders</h4>
               <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
                 <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">45.2</strong></div>
-                <div><span class="text-slate-400 block text-[9px]">Inc</span><strong class="text-white">$26.3K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Income</span><strong class="text-white">$26.3K</strong></div>
                 <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">20.9</strong></div>
               </div>
               <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Price-sensitive shoppers purchasing strictly essential commodities.
+                Low-income, low-spending price-conscious shoppers. Strictly focus on staple necessities and budgets.
               </p>
               <div class="text-[10px] text-rose-300 font-medium bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
-                <strong>Strategy:</strong> Digital promotions, essential bundles, clearance outlet channels.
+                <strong>Strategy:</strong> Digital promotions, essential bundles, clearance outlet sales channels.
+              </div>
+            </div>
+
+            <!-- Persona 5: Moderate Spenders -->
+            <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border-l-4 border-l-cyan-400 space-y-2.5 min-w-0 col-span-1 sm:col-span-2 lg:col-span-1 xl:col-span-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold text-cyan-400 uppercase">81 Users (40.5%)</span>
+                <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-[9px] font-mono">Moderate</span>
+              </div>
+              <h4 class="text-sm sm:text-base font-bold text-white">Moderate Spenders</h4>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-mono py-1.5 bg-surface-900 rounded-lg">
+                <div><span class="text-slate-400 block text-[9px]">Age</span><strong class="text-white">42.7</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Income</span><strong class="text-white">$55.3K</strong></div>
+                <div><span class="text-slate-400 block text-[9px]">Spend</span><strong class="text-white">49.5</strong></div>
+              </div>
+              <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Middle-income, average-spending mainstream consumer base. Forms the dependable backbone of retail volume.
+              </p>
+              <div class="text-[10px] text-cyan-300 font-medium bg-cyan-500/10 p-2 rounded-lg border border-cyan-500/20">
+                <strong>Strategy:</strong> Seasonal engagement, loyalty rewards tiers, family bundles, balanced discounts.
               </div>
             </div>
 
@@ -1074,9 +1054,11 @@
               <p class="text-[11px] text-slate-400 truncate">Annual Income ($k) vs. Spending Score across 200 Mall Customers</p>
             </div>
             <div class="flex items-center flex-wrap gap-2 text-[10px] sm:text-xs">
-              <span class="flex items-center space-x-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Champions</span></span>
-              <span class="flex items-center space-x-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Untapped</span></span>
-              <span class="flex items-center space-x-1 text-pink-400"><span class="w-2 h-2 rounded-full bg-pink-400"></span><span>Young Spenders</span></span>
+              <span class="flex items-center space-x-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Champions (39)</span></span>
+              <span class="flex items-center space-x-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Untapped (35)</span></span>
+              <span class="flex items-center space-x-1 text-pink-400"><span class="w-2 h-2 rounded-full bg-pink-400"></span><span>Young Spenders (22)</span></span>
+              <span class="flex items-center space-x-1 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Sensible Spenders (23)</span></span>
+              <span class="flex items-center space-x-1 text-cyan-400"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span>Moderate Spenders (81)</span></span>
             </div>
           </div>
           <div class="chart-wrapper h-64 sm:h-80">
@@ -1703,13 +1685,13 @@
         new Chart(ctxSil, {
           type: 'bar',
           data: {
-            labels: ['K=2', 'K=3', 'K=4', 'K=5', 'K=6 (Optimal)', 'K=7', 'K=8', 'K=9', 'K=10'],
+            labels: ['K=2', 'K=3', 'K=4', 'K=5', 'K=5 (Optimal)', 'K=7', 'K=8', 'K=9', 'K=10'],
             datasets: [{
               label: 'Silhouette Score',
               data: [0.32, 0.36, 0.39, 0.42, 0.45, 0.41, 0.39, 0.37, 0.35],
               backgroundColor: [
                 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)',
-                'rgba(168, 85, 247, 0.6)', '#10b981', 'rgba(148, 163, 184, 0.3)',
+                '#10b981', 'rgba(168, 85, 247, 0.6)', 'rgba(148, 163, 184, 0.3)',
                 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)', 'rgba(148, 163, 184, 0.3)'
               ],
               borderRadius: 4
@@ -1747,26 +1729,32 @@
           data: {
             datasets: [
               {
-                label: 'Champions',
-                data: genCluster(86, 82, 39, 26, 26),
+                label: 'Champions (39)',
+                data: genCluster(86.5, 82.1, 39, 22, 22),
                 backgroundColor: '#10b981',
                 pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Untapped',
-                data: genCluster(88, 17, 33, 28, 22),
+                label: 'Untapped (35)',
+                data: genCluster(88.2, 17.1, 35, 24, 18),
                 backgroundColor: '#f59e0b',
                 pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Careless',
-                data: genCluster(25, 79, 23, 16, 26),
+                label: 'Young Spenders (22)',
+                data: genCluster(25.7, 79.4, 22, 16, 20),
                 backgroundColor: '#ec4899',
                 pointRadius: window.innerWidth < 640 ? 3.5 : 5
               },
               {
-                label: 'Moderate',
-                data: genCluster(55, 49, 84, 28, 30),
+                label: 'Sensible Spenders (23)',
+                data: genCluster(26.3, 20.9, 23, 16, 18),
+                backgroundColor: '#f43f5e',
+                pointRadius: window.innerWidth < 640 ? 3.5 : 5
+              },
+              {
+                label: 'Moderate Spenders (81)',
+                data: genCluster(55.3, 49.5, 81, 24, 26),
                 backgroundColor: '#38a9f7',
                 pointRadius: window.innerWidth < 640 ? 3.5 : 5
               }
@@ -1795,12 +1783,11 @@
     // INTERACTIVE WHAT-IF SIMULATOR ENGINE
     // -------------------------------------------------------------
     const clusterCentroids = [
-      { id: 0, name: "Mature Moderate Spenders", badge: "Cluster 0 • Mature Spenders", age: 49.4, inc: 44.4, spd: 42.2, color: "#94a3b8", desc: "Middle-aged customer with balanced earnings and utility-focused shopping habits.", action: "Retention loyalty programs, warranty upgrades, quality assurance communication." },
-      { id: 1, name: "Young Moderate Spenders", badge: "Cluster 1 • Young Active", age: 25.3, inc: 40.0, spd: 60.3, color: "#38a9f7", desc: "Young professional with steady career beginnings and healthy lifestyle spending interest.", action: "Digital marketing, social media campaigns, student/entry-level tech bundles." },
-      { id: 2, name: "High-Income Low Spenders", badge: "Cluster 2 • Untapped Opportunity", age: 41.7, inc: 88.2, spd: 17.3, color: "#f59e0b", desc: "Highly affluent customer who shops infrequently. Huge untapped wealth reserves.", action: "Exclusive VIP concierge, durability and prestige narratives, bespoke corporate showcases." },
-      { id: 3, name: "High-Income High Spenders", badge: "Cluster 3 • Champions Tier", age: 32.7, inc: 86.5, spd: 82.1, color: "#10b981", desc: "Crown jewel demographic. Young, highly compensated, frequent luxury purchasing behavior.", action: "Premium product drops, VIP concierge early access, white-glove treatment. NEVER discount." },
-      { id: 4, name: "Low-Income High Spenders", badge: "Cluster 4 • Young Enthusiasts", age: 25.3, inc: 25.7, spd: 79.4, color: "#ec4899", desc: "Young trend-conscious buyer with modest income but high impulse/fashion spending appetite.", action: "Flexible BNPL installment financing, limited-drop capsule collections, flash weekend deals." },
-      { id: 5, name: "Low-Income Low Spenders", badge: "Cluster 5 • Frugal Essentials", age: 45.2, inc: 26.3, spd: 20.9, color: "#f43f5e", desc: "Price-conscious consumer focused on staple necessities and strict monthly household budgets.", action: "Cost-effective digital coupons, multi-pack grocery/supply discounts, clearance promotions." }
+      { id: 1, name: "Champions", badge: "Cluster 1 • Champions Tier", age: 32.7, inc: 86.5, spd: 82.1, color: "#10b981", desc: "High-income, high-spending crown jewel demographic (39 customers, 19.5%). Primary driver of luxury profitability.", action: "VIP concierge, exclusive early-access product drops, premium white-glove loyalty. Never discount." },
+      { id: 2, name: "Untapped", badge: "Cluster 2 • Untapped Opportunity", age: 41.1, inc: 88.2, spd: 17.1, color: "#f59e0b", desc: "High-income, low-spending affluent customers (35 customers, 17.5%). Great untapped purchasing reserves that resist generic sales.", action: "Bespoke corporate showcases, durability/prestige messaging, targeted personalized re-engagement." },
+      { id: 3, name: "Young Spenders", badge: "Cluster 3 • Young Trendsetters", age: 25.3, inc: 25.7, spd: 79.4, color: "#ec4899", desc: "Low-income, high-spending young lifestyle buyers (22 customers, 11.0%). Highly responsive to fashion, tech gadgets, and impulse drops.", action: "Flexible BNPL installment financing, limited-drop capsule collections, flash weekend deals." },
+      { id: 4, name: "Sensible Spenders", badge: "Cluster 4 • Budget Essentials", age: 45.2, inc: 26.3, spd: 20.9, color: "#f43f5e", desc: "Low-income, low-spending price-conscious shoppers (23 customers, 11.5%). Strictly focus on staple necessities and household budgets.", action: "Cost-effective digital coupons, multi-pack grocery/supply discounts, clearance promotions." },
+      { id: 5, name: "Moderate Spenders", badge: "Cluster 5 • Balanced Core", age: 42.7, inc: 55.3, spd: 49.5, color: "#38a9f7", desc: "Middle-income, average-spending mainstream consumer base (81 customers, 40.5%). Forms the dependable backbone of retail volume.", action: "Routine engagement, seasonal promotions, loyalty reward tiers, family product bundles." }
     ];
 
     function updateSimulator() {
@@ -1813,7 +1800,7 @@
       document.getElementById('val-spending').textContent = spd + '/100';
 
       let minDistance = Infinity;
-      let matchedCluster = clusterCentroids[3];
+      let matchedCluster = clusterCentroids[0];
 
       clusterCentroids.forEach(c => {
         const dAge = (age - c.age) / 14.0;
